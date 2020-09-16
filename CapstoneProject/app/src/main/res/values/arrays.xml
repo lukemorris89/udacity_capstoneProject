@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="age_groups">
+        <item>Age group…</item>
+        <item>0–4</item>
+        <item>5–10</item>
+        <item>11–20</item>
+        <item>21–30</item>
+        <item>31–40</item>
+        <item>41–50</item>
+        <item>51–60</item>
+        <item>61–70</item>
+        <item>71–80</item>
+        <item>81–90</item>
+        <item>90+</item>
+    </string-array>
+    <string-array name="sex_options">
+        <item>Sex…</item>
+        <item>Male</item>
+        <item>Female</item>
+        <item>Undisclosed</item>
+    </string-array>
+    <string-array name="result_options">
+        <item>Test result…</item>
+        <item>Positive</item>
+        <item>Negative</item>
+        <item>Inconclusive</item>
+    </string-array>
+    <string-array name="ethnicity_options">
+        <item>Ethnicity…</item>
+        <item>White (English/Welsh/Scottish/Northern Irish/British)</item>
+        <item>White (Irish)</item>
+        <item>White (Gypsy or Irish traveller)</item>
+        <item>White (Other)</item>
+        <item>Mixed (White and Black Caribbean)</item>
+        <item>Mixed (White and Black African)</item>
+        <item>Mixed (Other)</item>
+        <item>Asian/Asian British (Indian)</item>
+        <item>Asian/Asian British (Pakistani)</item>
+        <item>Asian/Asian British (Bangladeshi)</item>
+        <item>Asian/Asian British (Chinese)</item>
+        <item>Asian/Asian British (Other)</item>
+        <item>Black (African)</item>
+        <item>Black (Caribbean)</item>
+        <item>Black (British)</item>
+        <item>Black (Other)</item>
+        <item>Arab</item>
+        <item>Other</item>
+        <item>Undisclosed</item>
+    </string-array>
+</resources>

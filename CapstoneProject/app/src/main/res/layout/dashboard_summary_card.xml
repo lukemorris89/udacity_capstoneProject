@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardElevation="8dp"
+    card_view:cardUseCompatPadding="true"
+    card_view:cardBackgroundColor="@android:color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+        <com.app.progresviews.ProgressWheel
+            android:id="@+id/wheel_progress_positive"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:barWidth="12dp"
+            app:marginBtwText= "10dp"
+            app:countText="0"
+            app:definitionText="Positive"
+            app:countTextColor="@android:color/black"
+            app:defTextColor="@android:color/black"
+            app:progressColor="#009688"
+            app:defTextSize="10sp"
+            app:countTextSize="20sp"
+            app:percentage="360"/>
+        <com.app.progresviews.ProgressWheel
+            android:id="@+id/wheel_progress_negative"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:barWidth="12dp"
+            app:marginBtwText= "10dp"
+            app:countText="0"
+            app:definitionText="Negative"
+            app:countTextColor="@android:color/black"
+            app:defTextColor="@android:color/black"
+            app:progressColor="#f44336"
+            app:defTextSize="10sp"
+            app:countTextSize="20sp"
+            app:percentage="360"/>
+        <com.app.progresviews.ProgressWheel
+            android:id="@+id/wheel_progress_inconclusive"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:barWidth="12dp"
+            app:marginBtwText= "10dp"
+            app:countText="0"
+            app:definitionText="Inconclusive"
+            app:countTextColor="@android:color/black"
+            app:defTextColor="@android:color/black"
+            app:progressColor="#ffc107"
+            app:defTextSize="10sp"
+            app:countTextSize="20sp"
+            app:percentage="360"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

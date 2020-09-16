@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">FieldTest</string>
+    <string name="title_activity_main">FieldTest</string>
+    <string name="record_new_test_title">Record new test</string>
+    <string name="negative">Negative</string>
+    <string name="positive">Positive</string>
+    <string name="inconclusive">Inconclusive</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="map">Map</string>
+    <string name="trends">Trends</string>
+    <string name="patient_id">Patient ID</string>
+    <string name="test_id">Test ID</string>
+    <string name="test_notes">Test Notes</string>
+    <string name="symptom_5">Symptom 5</string>
+    <string name="symptom_4">Symptom 4</string>
+    <string name="symptom_3">Symptom 3</string>
+    <string name="symptom_2">Symptom 2</string>
+    <string name="symptom_1">Symptom 1</string>
+    <string name="save_test">Save Test</string>
+    <string name="na">N/A</string>
+</resources>
