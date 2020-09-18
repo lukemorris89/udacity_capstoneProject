@@ -31,6 +31,7 @@
                         style="@style/DashboardExpandButtonText"
                         android:text="@string/positive"/>
                     <ImageButton
+                        android:id="@+id/expand_view_button_image_positive"
                         style="@style/DashboardExpandButtonStyle"
                         android:src="@drawable/ic_baseline_expand_more_24"/>
                     <View
@@ -43,7 +44,7 @@
                 <LinearLayout
                     android:id="@+id/recyclerview_positive_container"
                     style="@style/DashboardResultsRecyclerViewContainer"
-                    android:layout_height="200dp">
+                    android:layout_height="0dp">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview_positive"
                     style="@style/DashboardResultsRecyclerView"/>
@@ -54,6 +55,7 @@
                         style="@style/DashboardExpandButtonText"
                         android:text="@string/negative"/>
                     <ImageButton
+                        android:id="@+id/expand_view_button_image_negative"
                         style="@style/DashboardExpandButtonStyle"
                         android:src="@drawable/ic_baseline_expand_more_24"/>
                     <View
@@ -67,7 +69,7 @@
                     android:id="@+id/recyclerview_negative_container"
                     style="@style/DashboardResultsRecyclerViewContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp">
+                    android:layout_height="0dp">
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerview_negative"
                         style="@style/DashboardResultsRecyclerView"/>
@@ -78,6 +80,7 @@
                         style="@style/DashboardExpandButtonText"
                         android:text="@string/inconclusive"/>
                     <ImageButton
+                        android:id="@+id/expand_view_button_image_inconclusive"
                         style="@style/DashboardExpandButtonStyle"
                         android:src="@drawable/ic_baseline_expand_more_24"/>
                     <View
@@ -91,7 +94,7 @@
                     android:id="@+id/recyclerview_inconclusive_container"
                     style="@style/DashboardResultsRecyclerViewContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp">
+                    android:layout_height="0dp">
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerview_inconclusive"
                         style="@style/DashboardResultsRecyclerView"/>

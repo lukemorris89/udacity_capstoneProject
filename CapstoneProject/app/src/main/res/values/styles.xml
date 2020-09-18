@@ -49,8 +49,16 @@
         <item name="android:paddingTop">24dp</item>
     </style>
 
+    <style name="DashboardCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginStart">24dp</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+
     <style name="DashboardExpandButtonLayout" parent="DashboardCard">
-        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_height">70dp</item>
     </style>
 
     <style name="DashboardExpandButtonText">
@@ -79,21 +87,15 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="DashboardCard">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_marginStart">24dp</item>
-        <item name="android:layout_marginEnd">24dp</item>
-        <item name="android:background">@android:color/white</item>
-        <item name="android:elevation">8dp</item>
-    </style>
-
     <style name="DashboardNoTestsResultsTextView" parent="DashboardCard">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
         <item name="android:paddingTop">16dp</item>
         <item name="android:paddingBottom">16dp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:text">No tests yet!</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="DashboardResultsRecyclerViewContainer" parent="DashboardCard">
@@ -101,7 +103,19 @@
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
-    <style name="DashboardResultsRecyclerView" parent="DashboardCard">
+    <style name="DashboardResultsRecyclerView">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="DashboardResultsRecyclerViewText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

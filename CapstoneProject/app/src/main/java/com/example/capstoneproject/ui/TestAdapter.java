@@ -1,5 +1,6 @@
 package com.example.capstoneproject.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.capstoneproject.R;
 import com.example.capstoneproject.model.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder> {
@@ -19,9 +21,13 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
     private List<Test> mTestsList;
     private Context mContext;
 
+    public TestAdapter(Activity context) {
+        mTestsList = new ArrayList<>();
+        mContext = context;
+    }
+
     @Override
     public TestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        mContext = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View itemView = inflater.inflate(R.layout.recyclerview_item, parent, false);
         return new TestViewHolder(itemView);
@@ -31,7 +37,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
     public void onBindViewHolder(TestViewHolder holder, int position) {
         if (mTestsList != null) {
             Test current = mTestsList.get(position);
-            holder.testIdTextView.setText(current.getTestID());
+            holder.testIdTextView.setText(String.valueOf(current.getTestID()));
             holder.patientIdTextView.setText(current.getPatientID());
             holder.dateTimeTextView.setText(current.getTestDateFormatted());
             holder.viewTestTextView.setOnClickListener(new View.OnClickListener() {
@@ -45,8 +51,9 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
         }
     }
 
-    void setTests(List<Test> tests){
-        mTestsList = tests;
+    public void setTests(List<Test> tests){
+        mTestsList.clear();
+        mTestsList.addAll(tests);
         notifyDataSetChanged();
     }
 
