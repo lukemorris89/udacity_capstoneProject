@@ -20,6 +20,8 @@ public abstract class TestDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "testData";
     private static TestDatabase sInstance;
 
+    public abstract TestDao testDao();
+
     public static TestDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
@@ -27,6 +29,7 @@ public abstract class TestDatabase extends RoomDatabase {
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         TestDatabase.class,
                         TestDatabase.DATABASE_NAME)
+                        .fallbackToDestructiveMigration()
                         .build();
             }
         }

@@ -7,37 +7,37 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.capstoneproject.model.Test;
+import com.example.capstoneproject.repository.TestRepository;
 
 import java.util.List;
 
 public class TestViewModel extends AndroidViewModel {
-    private LiveData<List<Test>> tests;
-    private LiveData<List<Test>> positiveTests;
-    private LiveData<List<Test>> negativeTests;
-    private LiveData<List<Test>> inconclusiveTests;
+    private TestRepository mTestRepository;
+    private LiveData<List<Test>> mAllTests;
 
     public TestViewModel(@NonNull Application application) {
         super(application);
-        TestDatabase database = TestDatabase.getInstance(this.getApplication());
-        this.tests = database.TestDao().loadAllTests();
-        this.positiveTests = database.TestDao().loadTestGroup("Positive");
-        this.negativeTests = database.TestDao().loadTestGroup("Negative");
-        this.inconclusiveTests = database.TestDao().loadTestGroup("Inconclusive");
+        mTestRepository = new TestRepository(application);
+        mAllTests = mTestRepository.getAllTests();
     }
 
-    public LiveData<List<Test>> getTests() {
-        return tests;
+    public LiveData<List<Test>> getAllTests() {
+        return mAllTests;
     }
 
-    public LiveData<List<Test>> getPositiveTestGroup() {
-        return positiveTests;
+    public LiveData<List<Test>> getTestGroup(String testGroup) {
+        return mTestRepository.getTestGroup(testGroup);
     }
 
-    public LiveData<List<Test>> getNegativeTestGroup() {
-        return negativeTests;
+    public LiveData<Test> getSingleTestById(int testId) {
+        return mTestRepository.getSingleTestByID(testId);
     }
 
-    public LiveData<List<Test>> getInconclusiveTestGroup() {
-        return inconclusiveTests;
+    public void insertTest(Test test) {
+        mTestRepository.insertTest(test);
+    }
+
+    public void updateTest(Test test) {
+        mTestRepository.updateTest(test);
     }
 }
