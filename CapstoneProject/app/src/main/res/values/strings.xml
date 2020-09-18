@@ -18,4 +18,6 @@
     <string name="symptom_1">Symptom 1</string>
     <string name="save_test">Save Test</string>
     <string name="na">N/A</string>
+    <string name="date_time">Date Time</string>
+    <string name="view">View</string>
 </resources>

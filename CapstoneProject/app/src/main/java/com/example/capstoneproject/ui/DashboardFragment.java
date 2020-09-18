@@ -8,18 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.app.progresviews.ProgressWheel;
 import com.example.capstoneproject.R;
-//import com.example.capstoneproject.data.ExpandableListDataPump;
 import com.example.capstoneproject.data.TestDatabase;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.model.Test;
@@ -27,7 +25,6 @@ import com.example.capstoneproject.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
@@ -44,9 +41,11 @@ public class DashboardFragment extends Fragment {
 
     private TestDatabase mDb;
 
-    private ProgressWheel mDashboardProgressWheelPositive;
-    private ProgressWheel mDashboardProgressWheelNegative;
-    private ProgressWheel mDashboardProgressWheelInconclusive;
+    private DashboardProgressBar mDashboardProgressWheelPositive;
+    private DashboardProgressBar mDashboardProgressWheelNegative;
+    private DashboardProgressBar mDashboardProgressWheelInconclusive;
+
+    private Context mContext;
 
 
     public DashboardFragment() {
@@ -60,20 +59,16 @@ public class DashboardFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        mContext = getContext();
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
 
         mDashboardProgressWheelPositive = view.findViewById(R.id.wheel_progress_positive);
         mDashboardProgressWheelNegative = view.findViewById(R.id.wheel_progress_negative);
         mDashboardProgressWheelInconclusive = view.findViewById(R.id.wheel_progress_inconclusive);
 
         mExpandableListViews = new ArrayList<>();
-        ExpandableListView expandableListViewPositive = view.findViewById(R.id.expandable_listview_positive);
-        ExpandableListView expandableListViewNegative = view.findViewById(R.id.expandable_listview_negative);
-        ExpandableListView expandableListViewInconclusive = view.findViewById(R.id.expandable_listview_inconclusive);
-        mExpandableListViews.add(expandableListViewPositive);
-        mExpandableListViews.add(expandableListViewNegative);
-        mExpandableListViews.add(expandableListViewInconclusive);
+
 
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,33 +81,7 @@ public class DashboardFragment extends Fragment {
 
         mDb = TestDatabase.getInstance(getActivity().getApplicationContext());
         TestViewModel viewModel = new ViewModelProvider(this).get(TestViewModel.class);
-        viewModel.getTests().observe(getViewLifecycleOwner(), new Observer<List<Test>>() {
-            @Override
-            public void onChanged(List<Test> tests) {
-                setUpExpandableListViews();
-            }
-        });
-        viewModel.getPositiveTestGroup().observe(getViewLifecycleOwner(), new Observer<List<Test>>() {
-            @Override
-            public void onChanged(final List<Test> tests) {
-                mPositiveTests = tests;
-                updateDashboardSummaryCard(POSITIVE_KEY);
-            }
-        });
-        viewModel.getNegativeTestGroup().observe(getViewLifecycleOwner(), new Observer<List<Test>>() {
-            @Override
-            public void onChanged(final List<Test> tests) {
-                mNegativeTests = tests;
-                updateDashboardSummaryCard(NEGATIVE_KEY);
-            }
-        });
-        viewModel.getInconclusiveTestGroup().observe(getViewLifecycleOwner(), new Observer<List<Test>>() {
-            @Override
-            public void onChanged(final List<Test> tests) {
-                mInconclusiveTests = tests;
-                updateDashboardSummaryCard(INCONCLUSIVE_KEY);
-            }
-        });
+
         return view;
     }
 
@@ -147,79 +116,44 @@ public class DashboardFragment extends Fragment {
         for (int i = 0; i < mExpandableListViews.size(); i++) {
             mExpandableListViews.get(i).setAdapter(expandableListViewAdapters.get(i));
         }
-        setUpExpandFunctionality();
+
     }
 
-    private void setUpExpandFunctionality() {
-        for (ExpandableListView view: mExpandableListViews) {
-            view.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-                @Override
-                public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                    setListViewHeight(parent, groupPosition);
-                    return false;
-                }
-            });
-
-            view.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                @Override
-                public void onGroupExpand(int groupPosition) {
-                }
-            });
-
-            view.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-                @Override
-                public void onGroupCollapse(int groupPosition) {
-                }
-            });
-
-            view.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                @Override
-                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    return false;
-                }
-            });
-        }
-    }
 
     private void updateDashboardSummaryCard(String targetView) {
         int updateLength;
-        if(targetView.equals("Positive")) {
+        if (targetView.equals("Positive")) {
             updateLength = mPositiveTests.size();
-            mDashboardProgressWheelPositive.setStepCountText(String.valueOf(updateLength));
-        } else if(targetView.equals("Negative")) {
+//            mDashboardProgressWheelPositive.setStepCountText(String.valueOf(updateLength));
+        } else if (targetView.equals("Negative")) {
             updateLength = mNegativeTests.size();
-            mDashboardProgressWheelNegative.setStepCountText(String.valueOf(updateLength));
-        } else if(targetView.equals("Inconclusive")) {
+//            mDashboardProgressWheelNegative.setStepCountText(String.valueOf(updateLength));
+        } else if (targetView.equals("Inconclusive")) {
             updateLength = mInconclusiveTests.size();
-            mDashboardProgressWheelInconclusive.setStepCountText(String.valueOf(updateLength));
+//            mDashboardProgressWheelInconclusive.setStepCountText(String.valueOf(updateLength));
         }
     }
 
-    private void setListViewHeight(ExpandableListView listView, int group) {
-        ExpandableListAdapter listAdapter = listView.getExpandableListAdapter();
-        int totalHeight = 0;
-        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY);
-        for (int i = 0; i < listAdapter.getGroupCount(); i++) {
-            View groupItem = listAdapter.getGroupView(i, false, null, listView);
-            groupItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += groupItem.getMeasuredHeight();
-
-            if (((listView.isGroupExpanded(i)) && (i != group)) || ((!listView.isGroupExpanded(i)) && (i == group))) {
-                for (int j = 0; j < listAdapter.getChildrenCount(i); j++) {
-                    View listItem = listAdapter.getChildView(i, j, false, null, listView);
-                    listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-                    totalHeight += listItem.getMeasuredHeight();
-                }
-            }
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        int height = totalHeight + (listView.getDividerHeight() * (listAdapter.getGroupCount() - 1));
-        if (height < 10) {
-            height = 200;
-        }
-        params.height = height;
-        listView.setLayoutParams(params);
-        listView.requestLayout();
+    private void setRecyclerViewHeight(ExpandableListView listView, int group) {
+//        int
+//        ExpandableListAdapter listAdapter = listView.getExpandableListAdapter();
+//        int totalHeight = 0;
+//        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY);
+//        for (int i = 0; i < listAdapter.getGroupCount(); i++) {
+//            View groupItem = listAdapter.getGroupView(i, false, null, listView);
+//            groupItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+//            totalHeight += groupItem.getMeasuredHeight();
+//
+//        }
+//
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        int height = totalHeight + (listView.getDividerHeight() * (listAdapter.getGroupCount() - 1));
+//        if (height < 10) {
+//            height = 200;
+//        }
+//        params.height = height;
+//        listView.setLayoutParams(params);
+//        listView.requestLayout();
+//    }
     }
 }

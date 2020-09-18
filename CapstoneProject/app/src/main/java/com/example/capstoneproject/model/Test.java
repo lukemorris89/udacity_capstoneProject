@@ -4,8 +4,11 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 @Entity (tableName = "testData")
 public class Test {
@@ -141,5 +144,10 @@ public class Test {
 
     public void setTestDate(Date testDate) {
         this.mTestDate = testDate;
+    }
+
+    public String getTestDateFormatted() {
+        DateFormat dateFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        return dateFormat.format(mTestDate);
     }
 }

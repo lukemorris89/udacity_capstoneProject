@@ -194,7 +194,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         SaveTestExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                mDb.TestDao().insertTest(test);
+                mDb.testDao().insertTest(test);
             }
         });
 

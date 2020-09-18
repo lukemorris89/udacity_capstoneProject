@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.DashboardFragment"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,9 +12,11 @@
         <include
             android:id="@+id/dashboard_summary_card"
             layout="@layout/dashboard_summary_card"
+            style="@style/DashboardCard"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_margin="12dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,39 +25,78 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <ExpandableListView
-                    android:id="@+id/expandable_listview_positive"
+                <RelativeLayout
+                    style="@style/DashboardExpandButtonLayout">
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/DashboardExpandButtonText"
+                        android:text="@string/positive"/>
+                    <ImageButton
+                        style="@style/DashboardExpandButtonStyle"
+                        android:src="@drawable/ic_baseline_expand_more_24"/>
+                    <View
+                        android:id="@+id/expand_view_button_positive"
+                        style="@style/DashboardExpandButtonOverlay"/>
+                </RelativeLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/no_test_results_positive"
+                    style="@style/DashboardNoTestsResultsTextView"/>
+                <LinearLayout
+                    android:id="@+id/recyclerview_positive_container"
+                    style="@style/DashboardResultsRecyclerViewContainer"
+                    android:layout_height="200dp">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_positive"
+                    style="@style/DashboardResultsRecyclerView"/>
+                </LinearLayout>
+                <RelativeLayout
+                    style="@style/DashboardExpandButtonLayout">
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/DashboardExpandButtonText"
+                        android:text="@string/negative"/>
+                    <ImageButton
+                        style="@style/DashboardExpandButtonStyle"
+                        android:src="@drawable/ic_baseline_expand_more_24"/>
+                    <View
+                        android:id="@+id/expand_view_button_negative"
+                        style="@style/DashboardExpandButtonOverlay"/>
+                </RelativeLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/no_test_results_negative"
+                    style="@style/DashboardNoTestsResultsTextView"/>
+                <LinearLayout
+                    android:id="@+id/recyclerview_negative_container"
+                    style="@style/DashboardResultsRecyclerViewContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:elevation="8dp"
-                    android:childDivider="@android:color/transparent"/>
-                <ExpandableListView
-                    android:id="@+id/expandable_listview_negative"
+                    android:layout_height="200dp">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerview_negative"
+                        style="@style/DashboardResultsRecyclerView"/>
+                </LinearLayout>
+                <RelativeLayout
+                    style="@style/DashboardExpandButtonLayout">
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/DashboardExpandButtonText"
+                        android:text="@string/inconclusive"/>
+                    <ImageButton
+                        style="@style/DashboardExpandButtonStyle"
+                        android:src="@drawable/ic_baseline_expand_more_24"/>
+                    <View
+                        android:id="@+id/expand_view_button_inconclusive"
+                        style="@style/DashboardExpandButtonOverlay"/>
+                </RelativeLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/no_test_results_inconclusive"
+                    style="@style/DashboardNoTestsResultsTextView"/>
+                <LinearLayout
+                    android:id="@+id/recyclerview_inconclusive_container"
+                    style="@style/DashboardResultsRecyclerViewContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:elevation="8dp"
-                    android:childDivider="@android:color/transparent"/>
-                <ExpandableListView
-                    android:id="@+id/expandable_listview_inconclusive"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="24dp"
-                    android:elevation="8dp"
-                    android:childDivider="@android:color/transparent"/>
+                    android:layout_height="200dp">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerview_inconclusive"
+                        style="@style/DashboardResultsRecyclerView"/>
+                </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
