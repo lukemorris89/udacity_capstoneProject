@@ -16,18 +16,105 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             style="@style/Widget.MaterialComponents.Toolbar.Primary">
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:minHeight="?actionBarSize"
-            android:text="@string/record_new_test_title"
-            android:fontFamily="@font/comfortaa_regular"
-            android:textSize="20sp"
-            android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:minHeight="?actionBarSize"
+                android:text="@string/record_new_test_title"
+                android:fontFamily="@font/comfortaa_regular"
+                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+            <Button
+                android:id="@+id/edit_test_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_test"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                android:backgroundTint="@android:color/white"
+                android:textColor="@color/colorPrimary" />
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
+    <ScrollView
+        android:id="@+id/view_test_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_id_textview"
+                style="@style/ViewTestTextView"
+                android:text="Test ID"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/patient_id_textview"
+                style="@style/ViewTestTextView"
+                android:text="Patient ID"
+                app:layout_constraintTop_toBottomOf="@id/test_id_textview"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_result_textview"
+                style="@style/ViewTestTextView"
+                android:text="Test Result"
+                app:layout_constraintTop_toBottomOf="@id/patient_id_textview"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <LinearLayout
+                android:id="@+id/sex_age_textview_linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/test_result_textview"
+                app:layout_constraintLeft_toLeftOf="parent">
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/sex_textview"
+                    style="@style/ViewTestSplitTextView"
+                    android:text="Sex"
+                    android:layout_marginEnd="8dp"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/agegroup_textview"
+                    style="@style/ViewTestSplitTextView"
+                    android:text="Age Group"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ethnicity_textview"
+                style="@style/ViewTestTextView"
+                android:text="Ethnicity"
+                app:layout_constraintTop_toBottomOf="@id/sex_age_textview_linearlayout"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/comorbidities_textview"
+                style="@style/ViewTestTextView"
+                android:text="Comorbidities"
+                app:layout_constraintTop_toBottomOf="@id/ethnicity_textview"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_notes_textview"
+                style="@style/ViewTestTextView"
+                android:text="Test Notes"
+                app:layout_constraintTop_toBottomOf="@id/comorbidities_textview"
+                app:layout_constraintLeft_toLeftOf="parent" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_date_textview"
+                style="@style/ViewTestTextView"
+                android:text="Test Date"
+                app:layout_constraintTop_toBottomOf="@id/test_notes_textview"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_location_textview"
+                style="@style/ViewTestTextView"
+                android:text="Location"
+                app:layout_constraintTop_toBottomOf="@id/test_date_textview"
+                app:layout_constraintLeft_toLeftOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
     <ScrollView
         android:id="@+id/test_results_scrollview"
         android:layout_width="match_parent"
@@ -37,11 +124,18 @@
             android:layout_height="wrap_content"
             tools:context=".ui.RecordTestActivity"
             android:padding="24dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_id_edittest_textview"
+                style="@style/ViewTestTextView"
+                android:text="Test ID"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:visibility="gone"/>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/patient_id_edittext_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/test_id_edittest_textview"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:hint="@string/patient_id"
                 app:errorEnabled="true"
@@ -59,7 +153,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/patient_id_edittext_layout"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:hint="@string/test_result"
                 app:errorEnabled="true"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp">
@@ -67,7 +160,8 @@
                     android:id="@+id/record_test_test_result_dropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"/>
+                    android:hint="@string/test_result"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
             <LinearLayout
                 android:id="@+id/sex_age_dropdown_linearlayout"
@@ -76,22 +170,23 @@
                 android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@id/test_result_dropdown_layout"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:baselineAligned="false">
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/sex_dropdown_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/sex"
                     app:errorEnabled="true"
                     android:layout_marginBottom="4dp">
-                <AutoCompleteTextView
-                    android:id="@+id/sex_test_result_dropdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:inputType="none"/>
+                    <AutoCompleteTextView
+                        android:id="@+id/sex_test_result_dropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/sex"
+                        android:layout_marginEnd="8dp"
+                        android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/age_dropdown_layout"
@@ -99,7 +194,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/age_group"
                     android:layout_marginStart="8dp"
                     app:errorEnabled="true"
                     android:layout_marginBottom="4dp">
@@ -107,6 +201,7 @@
                         android:id="@+id/age_test_result_dropdown"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="@string/age_group"
                         android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -115,7 +210,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ethnicity"
                 app:layout_constraintTop_toBottomOf="@id/sex_age_dropdown_linearlayout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:errorEnabled="true"
@@ -125,6 +219,7 @@
                     android:id="@+id/ethnicity_test_result_dropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/ethnicity"
                     android:inputType="none"/>
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.checkbox.MaterialCheckBox

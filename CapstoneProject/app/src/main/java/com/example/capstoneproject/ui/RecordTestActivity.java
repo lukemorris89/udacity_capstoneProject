@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -29,10 +30,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.capstoneproject.R;
-import com.example.capstoneproject.data.TestDatabase;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.model.Test;
-import com.example.capstoneproject.utils.SaveTestExecutor;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -54,17 +53,60 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private double mTestLongitude;
     private boolean mTestValid;
 
+    private boolean isViewEditTest = false;
+
     private List<TextInputLayout> mEditTextLayouts;
+    private List<TextInputLayout> mDropdownLayouts;
     private List<EditText> mEditTextInputs;
     private List<AutoCompleteTextView> mDropdownInputs;
     private List<String> mDropdownErrorTextList;
+    private List<View> mInvalidViews;
 
-    private TestDatabase mDb;
+    private Button mEditTestButton;
+    private ScrollView mRecordEditTestScrollView;
+    private ScrollView mViewTestScrollView;
+    private TextView mTestIDTextView;
+
+    private TestViewModel mTestViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        if (intent.hasExtra("test_id")) {
+            isViewEditTest = true;
+        }
         setContentView(R.layout.activity_record_test);
+        mEditTestButton = findViewById(R.id.edit_test_button);
+        mRecordEditTestScrollView = findViewById(R.id.test_results_scrollview);
+        mViewTestScrollView = findViewById(R.id.view_test_scrollview);
+        mTestIDTextView = findViewById(R.id.test_id_edittest_textview);
+        if (isViewEditTest) {
+            mEditTestButton.setVisibility(View.VISIBLE);
+            mRecordEditTestScrollView.setVisibility(View.GONE);
+            mViewTestScrollView.setVisibility(View.VISIBLE);
+            mTestIDTextView.setVisibility(View.VISIBLE);
+        }
+
+        final boolean[] isEditable = {false};
+        mEditTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isEditable[0]) {
+                    mRecordEditTestScrollView.setVisibility(View.GONE);
+                    mViewTestScrollView.setVisibility(View.VISIBLE);
+                    mEditTestButton.setText(R.string.edit_test);
+                    isEditable[0] = false;
+                } else {
+                    mRecordEditTestScrollView.setVisibility(View.VISIBLE);
+                    mViewTestScrollView.setVisibility(View.GONE);
+                    mEditTestButton.setText(R.string.cancel);
+                    isEditable[0] = true;
+                }
+            }
+        });
+
+        mTestViewModel = new ViewModelProvider(this).get(TestViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.record_test_toolbar);
         setSupportActionBar(toolbar);
@@ -73,10 +115,12 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
+            if (isViewEditTest) {
+                TextView title = findViewById(R.id.title);
+                title.setText(R.string.view_test_results);
+            }
         }
 
-        mDb = TestDatabase.getInstance(getApplicationContext());
-        TestViewModel viewModel = new ViewModelProvider(this).get(TestViewModel.class);
 
         setupUI(findViewById(R.id.record_test_rootlayout));
 
@@ -101,11 +145,18 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
                 setupUI(innerView);
             }
         }
+        mInvalidViews = new ArrayList<>();
         setUpDropdowns();
         setUpEditTextValidation();
     }
 
     private void setUpDropdowns() {
+        mDropdownLayouts = new ArrayList<>();
+        mDropdownLayouts.add(findViewById(R.id.test_result_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.sex_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.age_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.ethnicity_dropdown_layout));
+
         mDropdownInputs = new ArrayList<>();
         mDropdownInputs.add(findViewById(R.id.record_test_test_result_dropdown));
         mDropdownInputs.add(findViewById(R.id.sex_test_result_dropdown));
@@ -118,15 +169,21 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.age_groups)));
         dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.ethnicity_options)));
 
+        mDropdownLayouts = new ArrayList<>();
+        mDropdownLayouts.add(findViewById(R.id.test_result_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.sex_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.age_dropdown_layout));
+        mDropdownLayouts.add(findViewById(R.id.ethnicity_dropdown_layout));
+
         for (int i = 0; i < mDropdownInputs.size(); i++) {
             mDropdownInputs.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_custom_textview, dropdownInputsLists.get(i)));
         }
+        setUpDropdownValidation();
     }
 
     private void setUpEditTextValidation() {
         mEditTextLayouts = new ArrayList<>();
         mEditTextLayouts.add(findViewById(R.id.patient_id_edittext_layout));
-
         mEditTextInputs = new ArrayList<>();
         mEditTextInputs.add(findViewById(R.id.patient_id_edittext_input));
 
@@ -134,7 +191,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             TextInputLayout inputLayout = mEditTextLayouts.get(i);
             EditText inputField = mEditTextInputs.get(i);
             TextWatcher editTextTextWatcher = null;
-
             if (i == 0) {
                 editTextTextWatcher = new TextWatcher() {
                     @Override
@@ -147,10 +203,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
                         if (textEntry.length() < mPatientIdMinLength) {
                             mTestValid = false;
                             inputLayout.setError("Please enter min 5 digits");
-
                         } else {
                             inputLayout.setError(null);
-
                         }
                     }
 
@@ -165,12 +219,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
 
     private void setUpDropdownValidation() {
-        List<TextInputLayout> dropdownLayouts = new ArrayList<>();
-        dropdownLayouts.add(findViewById(R.id.test_result_dropdown_layout));
-        dropdownLayouts.add(findViewById(R.id.sex_dropdown_layout));
-        dropdownLayouts.add(findViewById(R.id.age_dropdown_layout));
-        dropdownLayouts.add(findViewById(R.id.ethnicity_dropdown_layout));
-
         mDropdownErrorTextList = new ArrayList<>();
         mDropdownErrorTextList.add("Please choose test result");
         mDropdownErrorTextList.add("Please choose patient sex");
@@ -178,9 +226,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownErrorTextList.add("Please choose patient ethnicity");
 
         for (int i = 0; i < mDropdownInputs.size(); i++) {
-            TextInputLayout dropdownLayout = dropdownLayouts.get(i);
+            TextInputLayout dropdownLayout = mDropdownLayouts.get(i);
             AutoCompleteTextView dropdownInput = mDropdownInputs.get(i);
-            final boolean[] inputValid = {false};
             int finalI = i;
             TextWatcher dropdownTextWatcher = new TextWatcher() {
                 @Override
@@ -189,34 +236,27 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    String textEntry = charSequence.toString();
-                    if (textEntry.isEmpty()) {
-                        inputValid[0] = false;
-                        mTestValid = false;
-                    } else {
-                        inputValid[0] = true;
-                    }
-                    if (!inputValid[0]) {
-                        dropdownLayout.setError(mDropdownErrorTextList.get(finalI));
-                    } else {
                         dropdownLayout.setError(null);
                     }
-                }
+
 
                 @Override
                 public void afterTextChanged(Editable editable) {
                 }
             };
             dropdownInput.addTextChangedListener(dropdownTextWatcher);
-
-            if (dropdownInput.getText().toString().isEmpty()) {
-                inputValid[0] = false;
-                mTestValid = false;
-                dropdownLayouts.get(i).setError(mDropdownErrorTextList.get(i));
-            } else {
-                inputValid[0] = true;
-                dropdownLayouts.get(i).setError(null);
-            }
+            dropdownInput.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if (dropdownInput.getText().toString().isEmpty()) {
+                        mTestValid = false;
+                        dropdownLayout.setError(mDropdownErrorTextList.get(finalI));
+                        mInvalidViews.add(mDropdownInputs.get(finalI));
+                    } else {
+                        dropdownLayout.setError(null);
+                    }
+                }
+            });
         }
     }
 
@@ -236,20 +276,36 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     }
 
     private void saveTestResult() {
-        mTestValid = true;
-
+        TextInputLayout patientIdEditTextLayout = mEditTextLayouts.get(0);
         String patientId = mEditTextInputs.get(0).getText().toString();
         if (patientId.length() < mPatientIdMinLength) {
-            mEditTextLayouts.get(0).setError("Please enter min 5 digits");
+            patientIdEditTextLayout.setError("Please enter min 5 digits");
+            mInvalidViews.add(patientIdEditTextLayout);
+        } else {
+            patientIdEditTextLayout.setError(null);
         }
-        else {
-            mEditTextLayouts.get(0).setError(null);
+
+        for (int i = 0; i < mDropdownInputs.size(); i++) {
+            TextInputLayout dropdownLayout = mDropdownLayouts.get(i);
+            AutoCompleteTextView dropdownInput = mDropdownInputs.get(i);
+            if (dropdownInput.getText().toString().isEmpty()) {
+                mTestValid = false;
+                    dropdownLayout.setError(mDropdownErrorTextList.get(i));
+                    mInvalidViews.add(dropdownInput);
+            } else {
+                dropdownLayout.setError(null);
+            }
         }
-        setUpDropdownValidation();
 
         if (!mTestValid) {
-            ScrollView scrollView = findViewById(R.id.test_results_scrollview);
-            scrollView.fullScroll(ScrollView.FOCUS_UP);
+            mRecordEditTestScrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mInvalidViews.get(0).requestFocus();
+                    mRecordEditTestScrollView.scrollTo(0, mInvalidViews.get(0).getBottom());
+                    mInvalidViews.clear();
+                }
+            });
             return;
         }
 
@@ -258,28 +314,26 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         String ageGroup = mDropdownInputs.get(2).getText().toString();
         String ethnicity = mDropdownInputs.get(3).getText().toString();
 
-        ArrayList<CheckBox> comorbiditiesOptions = new ArrayList();
+        ArrayList<CheckBox> comorbiditiesOptions = new ArrayList<>();
         comorbiditiesOptions.add(findViewById(R.id.comorbidities_checkbox_symptom1));
         comorbiditiesOptions.add(findViewById(R.id.comorbidities_checkbox_symptom2));
         comorbiditiesOptions.add(findViewById(R.id.comorbidities_checkbox_symptom3));
         comorbiditiesOptions.add(findViewById(R.id.comorbidities_checkbox_symptom4));
         comorbiditiesOptions.add(findViewById(R.id.comorbidities_checkbox_symptom5));
-
         ArrayList<String> comorbidities = new ArrayList<>();
         int countComorbidities = 0;
-
         for (int i = 0; i < comorbiditiesOptions.size(); i++) {
             if (comorbiditiesOptions.get(i).isChecked()) {
                 comorbidities.add(comorbiditiesOptions.get(i).getText().toString());
                 countComorbidities++;
             }
         }
-
         if (countComorbidities == 0) {
             comorbidities.add(getString(R.string.na));
         }
 
-        String testNotes = mEditTextInputs.get(1).getText().toString();
+        EditText testNotesEditText = findViewById(R.id.test_notes_edittext_input);
+        String testNotes = testNotesEditText.getText().toString();
 
         Date testDate = new Date(System.currentTimeMillis());
 
@@ -297,19 +351,19 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         double testLongitude = mTestLongitude;
 
         final Test test = new Test(patientId, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, testLatitude, testLongitude, testDate);
-        SaveTestExecutor.getInstance().diskIO().execute(() -> mDb.testDao().insertTest(test));
+        if (isViewEditTest) {
+        mTestViewModel.updateTest(test);
+        } else {
+            mTestViewModel.insertTest(test);
+        }
 
-        Bundle bundle = new Bundle();
-        bundle.putString(TEST_SAVED_STRING_KEY, "Test Saved");
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(TEST_SAVED_BUNDLE_KEY, bundle);
         startActivity(intent);
         finish();
     }
 
     public void hideSoftKeyboard() {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = getCurrentFocus();
         if (view != null) {
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);

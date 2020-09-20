@@ -41,7 +41,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
             holder.patientIdTextView.setText(current.getPatientID());
             holder.dateTimeTextView.setText(current.getTestDateFormatted());
             holder.viewTestTextView.setOnClickListener(view -> {
-                Intent intent = new Intent(mContext, ViewTestActivity.class);
+                Intent intent = new Intent(mContext, RecordTestActivity.class);
                 intent.putExtra("test_id", current.getTestID());
                 mContext.startActivity(intent);
             });
