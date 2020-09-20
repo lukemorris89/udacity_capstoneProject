@@ -18,12 +18,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.example.capstoneproject.R;
 import com.example.capstoneproject.data.TestViewModel;
+import com.example.capstoneproject.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.View.GONE;
 
 public class DashboardFragment extends Fragment {
     private static final String LOG_TAG = DashboardFragment.class.getSimpleName();
@@ -35,12 +34,10 @@ public class DashboardFragment extends Fragment {
     private List<TextView> mNoResultsTextViewsList;
     private List<LinearLayout> mRecyclerViewContainersList;
 
-    private Context mContext;
     private TestViewModel mTestViewModel;
 
     private boolean[] isSelected = { false, false, false};
     private String[] mTestResultOptions = { "Positive", "Negative", "Inconclusive" };
-
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -56,7 +53,7 @@ public class DashboardFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContext = getContext();
+        Context context = getContext();
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         mDashboardProgressBarTextViewsList = new ArrayList<>();
@@ -93,19 +90,27 @@ public class DashboardFragment extends Fragment {
             RecyclerView currentRecyclerView = mRecyclerViewsList.get(i);
             setUpExpandFunctionality(i);
             currentRecyclerView.setAdapter(new TestAdapter(getActivity()));
-            currentRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            ((SimpleItemAnimator) currentRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            currentRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             int finalI = i;
             mTestViewModel.getTestGroup(mTestResultOptions[i]).observe(getViewLifecycleOwner(), tests -> {
                 TestAdapter adapter =(TestAdapter)currentRecyclerView.getAdapter();
                 if (adapter != null) {
                     adapter.setTests(tests);
+                    int adapterNewLength = adapter.getItemCount();
+                    if (adapterNewLength > Utils.adapterLengths[finalI]) {
+                        adapter.notifyItemInserted(adapterNewLength - 1);
+                    } else {
+                        RecyclerView.ItemAnimator animator = currentRecyclerView.getItemAnimator();
+                        if (animator instanceof SimpleItemAnimator) {
+                            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+                        }
+                    }
+                    Utils.setAdapterLengths(finalI, adapterNewLength);
                 }
                 updateDashboardSummaryCard(finalI, tests.size());
                 setRecyclerViewHeight(finalI);
             });
         }
-
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), RecordTestActivity.class);
@@ -117,7 +122,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        collapseAllRecyclerViews();
+//        collapseAllRecyclerViews();
     }
 
     private void setUpExpandFunctionality(int index) {
@@ -139,11 +144,9 @@ public class DashboardFragment extends Fragment {
         mDashboardProgressBarTextViewsList.get(index).setText(String.valueOf(size));
     }
 
-    private void collapseAllRecyclerViews() {
-        isSelected[0] = false;
-        isSelected[1] = false;
-        isSelected[2] = false;
-    }
+//    private void collapseAllRecyclerViews() {
+//        Arrays.fill(isSelected, false);
+//    }
 
     private void setRecyclerViewHeight(int index) {
         if (mRecyclerViewsList.get(index).getAdapter() != null) {
@@ -163,7 +166,7 @@ public class DashboardFragment extends Fragment {
                 mRecyclerViewContainersList.get(index).setLayoutParams(recyclerViewParams);
             } else {
                 if (isSelected[index]) {
-                    noResultsViewParams.height = 60;
+                    noResultsViewParams.height = 180;
                 } else {
                     noResultsViewParams.height = 0;
                 }

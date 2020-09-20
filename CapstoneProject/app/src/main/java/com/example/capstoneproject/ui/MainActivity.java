@@ -32,9 +32,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         for (int i=0; i < tabLayout.getTabCount(); i++) {
-            if(tabLayout.getTabAt(i) != null){
-                tabLayout.getTabAt(i).setIcon(tabIcons[i]);
-            }
+            tabLayout.getTabAt(i).setIcon(tabIcons[i]);
         }
     }
 

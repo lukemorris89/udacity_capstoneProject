@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="age_groups">
-        <item>Age group…</item>
         <item>0–4</item>
         <item>5–10</item>
         <item>11–20</item>
@@ -15,19 +14,16 @@
         <item>90+</item>
     </string-array>
     <string-array name="sex_options">
-        <item>Sex…</item>
         <item>Male</item>
         <item>Female</item>
         <item>Undisclosed</item>
     </string-array>
     <string-array name="result_options">
-        <item>Test result…</item>
         <item>Positive</item>
         <item>Negative</item>
         <item>Inconclusive</item>
     </string-array>
     <string-array name="ethnicity_options">
-        <item>Ethnicity…</item>
         <item>White (English/Welsh/Scottish/Northern Irish/British)</item>
         <item>White (Irish)</item>
         <item>White (Gypsy or Irish traveller)</item>

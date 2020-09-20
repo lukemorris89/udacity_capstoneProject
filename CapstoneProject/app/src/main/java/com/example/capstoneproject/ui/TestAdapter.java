@@ -40,16 +40,15 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
             holder.testIdTextView.setText(String.valueOf(current.getTestID()));
             holder.patientIdTextView.setText(current.getPatientID());
             holder.dateTimeTextView.setText(current.getTestDateFormatted());
-            holder.viewTestTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(mContext, ViewTestActivity.class);
-                    intent.putExtra("test_id", current.getTestID());
-                    mContext.startActivity(intent);
-                }
+            holder.viewTestTextView.setOnClickListener(view -> {
+                Intent intent = new Intent(mContext, ViewTestActivity.class);
+                intent.putExtra("test_id", current.getTestID());
+                mContext.startActivity(intent);
             });
         }
     }
+
+
 
     public void setTests(List<Test> tests){
         mTestsList.clear();
@@ -64,7 +63,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
         else return 0;
     }
 
-    class TestViewHolder extends RecyclerView.ViewHolder {
+    static class TestViewHolder extends RecyclerView.ViewHolder {
         private final TextView testIdTextView;
         private final TextView patientIdTextView;
         private final TextView dateTimeTextView;

@@ -20,4 +20,8 @@
     <string name="na">N/A</string>
     <string name="date_time">Date Time</string>
     <string name="view">View</string>
+    <string name="ethnicity">Ethnicity</string>
+    <string name="age_group">Age Group</string>
+    <string name="sex">Sex</string>
+    <string name="test_result">Test Result</string>
 </resources>
