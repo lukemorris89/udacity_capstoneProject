@@ -1,11 +1,14 @@
 package com.example.capstoneproject.ui;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +36,7 @@ public class DashboardFragment extends Fragment {
     private List<ImageButton> mExpandButtonsList;
     private List<TextView> mNoResultsTextViewsList;
     private List<LinearLayout> mRecyclerViewContainersList;
+    private List<DashboardProgressBar> mDashboardProgressBarsList;
 
     private TestViewModel mTestViewModel;
 
@@ -55,6 +59,11 @@ public class DashboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Context context = getContext();
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        mDashboardProgressBarsList = new ArrayList<>();
+        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_positive));
+        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_negative));
+        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_inconclusive));
 
         mDashboardProgressBarTextViewsList = new ArrayList<>();
         mDashboardProgressBarTextViewsList.add(view.findViewById(R.id.wheel_progress_positive_text));
@@ -110,6 +119,7 @@ public class DashboardFragment extends Fragment {
                 updateDashboardSummaryCard(finalI, tests.size());
                 setRecyclerViewHeight(finalI);
             });
+            setUpSummaryBarObserver(mDashboardProgressBarsList.get(i));
         }
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
@@ -122,7 +132,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        collapseAllRecyclerViews();
     }
 
     private void setUpExpandFunctionality(int index) {
@@ -173,5 +182,32 @@ public class DashboardFragment extends Fragment {
             }
             mNoResultsTextViewsList.get(index).setLayoutParams(noResultsViewParams);
         }
+    }
+
+    private void setUpSummaryBarObserver(DashboardProgressBar progressBar) {
+        progressBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                startAnimation(progressBar);
+                progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+    }
+
+    private void startAnimation(DashboardProgressBar progressBar) {
+        int max = 100;
+
+        ValueAnimator animator = ValueAnimator.ofInt(0, max);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setStartDelay(0);
+        animator.setDuration(300);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int value = (int) valueAnimator.getAnimatedValue();
+                progressBar.setProgress(value);
+            }
+        });
+        animator.start();
     }
 }

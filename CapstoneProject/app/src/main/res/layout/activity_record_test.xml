@@ -38,98 +38,191 @@
                 android:textColor="@color/colorPrimary" />
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
     <ScrollView
         android:id="@+id/view_test_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:visibility="gone">
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/DashboardCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:background="@android:color/white"
+            android:elevation="12dp">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp">
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/test_id_textview"
-                style="@style/ViewTestTextView"
-                android:text="Test ID"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" />
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/patient_id_textview"
-                style="@style/ViewTestTextView"
-                android:text="Patient ID"
-                app:layout_constraintTop_toBottomOf="@id/test_id_textview"
-                app:layout_constraintLeft_toLeftOf="parent" />
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/test_result_textview"
-                style="@style/ViewTestTextView"
-                android:text="Test Result"
-                app:layout_constraintTop_toBottomOf="@id/patient_id_textview"
-                app:layout_constraintLeft_toLeftOf="parent" />
+            android:padding="16dp">
             <LinearLayout
-                android:id="@+id/sex_age_textview_linearlayout"
+                android:id="@+id/test_id_textview_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/test_result_textview"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent">
                 <com.google.android.material.textview.MaterialTextView
+                    style="@style/ViewTestTitleTextView"
+                    android:text="@string/test_id"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_id_textview"
+                style="@style/ViewTestTextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/patient_id_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/test_id_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/ViewTestTitleTextView"
+                    android:text="@string/patient_id"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/patient_id_textview"
+                style="@style/ViewTestTextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/test_result_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/patient_id_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/test_result" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/test_result_textview"
+                    style="@style/ViewTestTextView" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/sex_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/test_result_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/ViewTestTitleTextView"
+                    android:text="@string/sex"/>
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/sex_textview"
-                    style="@style/ViewTestSplitTextView"
-                    android:text="Sex"
-                    android:layout_marginEnd="8dp"/>
+                    style="@style/ViewTestTextView"/>
+            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/age_textview_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/sex_textview_layout"
+                    app:layout_constraintLeft_toLeftOf="parent">
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/ViewTestTitleTextView"
+                    android:text="@string/age_group"/>
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/agegroup_textview"
-                    style="@style/ViewTestSplitTextView"
-                    android:text="Age Group"
-                    android:layout_marginStart="8dp"/>
+                    style="@style/ViewTestTextView" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ethnicity_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/age_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/ethnicity_textview"
-                style="@style/ViewTestTextView"
-                android:text="Ethnicity"
-                app:layout_constraintTop_toBottomOf="@id/sex_age_textview_linearlayout"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/ethnicity" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/ethnicity_textview"
+                    style="@style/ViewTestTextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/comorbidities_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/ethnicity_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comorbidities_textview"
-                style="@style/ViewTestTextView"
-                android:text="Comorbidities"
-                app:layout_constraintTop_toBottomOf="@id/ethnicity_textview"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                style="@style/ViewTestTitleTextView"
+                android:text="Comorbidities" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/comorbidities_textview"
+                    style="@style/ViewTestTextView" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/test_notes_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/comorbidities_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/test_notes_textview"
-                style="@style/ViewTestTextView"
-                android:text="Test Notes"
-                app:layout_constraintTop_toBottomOf="@id/comorbidities_textview"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/test_notes" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/test_notes_textview"
+                    style="@style/ViewTestTextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/test_date_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/test_notes_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/test_date_textview"
-                style="@style/ViewTestTextView"
-                android:text="Test Date"
-                app:layout_constraintTop_toBottomOf="@id/test_notes_textview"
-                app:layout_constraintLeft_toLeftOf="parent"/>
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/test_date"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/test_date_textview"
+                    style="@style/ViewTestTextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/test_location_textview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/test_date_textview_layout"
+                app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/location"/>
+                <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/test_location_textview"
-                style="@style/ViewTestTextView"
-                android:text="Location"
-                app:layout_constraintTop_toBottomOf="@id/test_date_textview"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                style="@style/ViewTestTextView"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
     </ScrollView>
     <ScrollView
         android:id="@+id/test_results_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/DashboardCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@android:color/white"
+            android:elevation="8dp">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:context=".ui.RecordTestActivity"
-            android:padding="24dp">
+            android:padding="16dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/test_id_title_edittest_textview"
+                style="@style/ViewTestTitleTextView"
+                android:text="@string/test_id"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textSize="18sp"
+                android:visibility="gone"/>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/test_id_edittest_textview"
                 style="@style/ViewTestTextView"
-                android:text="Test ID"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/test_id_title_edittest_textview"
+                android:textSize="18sp"
                 android:visibility="gone"/>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/patient_id_edittext_layout"
@@ -316,5 +409,6 @@
                 android:textSize="18sp"
                 android:inputType="textCapSentences|textNoSuggestions|textMultiLine" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>

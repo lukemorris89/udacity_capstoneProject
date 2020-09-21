@@ -22,7 +22,7 @@ public interface TestDao {
     LiveData<List<Test>> loadTestGroup(String testGroup);
 
     @Query("SELECT * FROM testData where mTestID = :testId ORDER BY mTestID")
-    LiveData<Test> loadSingleTestByID(int testId);
+    Test loadSingleTestByID(int testId);
 
     @Insert
     void insertTest(Test test);

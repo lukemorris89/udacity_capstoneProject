@@ -29,7 +29,7 @@ public class TestViewModel extends AndroidViewModel {
         return mTestRepository.getTestGroup(testGroup);
     }
 
-    public LiveData<Test> getSingleTestById(int testId) {
+    public Test getSingleTestById(int testId) {
         return mTestRepository.getSingleTestByID(testId);
     }
 

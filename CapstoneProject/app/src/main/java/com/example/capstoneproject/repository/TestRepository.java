@@ -28,7 +28,7 @@ public class TestRepository {
         return mTestDao.loadTestGroup(testGroup);
     }
 
-    public LiveData<Test> getSingleTestByID(int testId) {
+    public Test getSingleTestByID(int testId) {
         return mTestDao.loadSingleTestByID(testId);
     }
 
