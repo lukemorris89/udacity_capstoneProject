@@ -11,7 +11,7 @@ import androidx.room.TypeConverters;
 
 import com.example.capstoneproject.model.Test;
 
-@Database(entities = {Test.class}, version = 1, exportSchema = false)
+@Database(entities = {Test.class}, version = 2, exportSchema = false)
 
 @TypeConverters({Converters.class})
 public abstract class TestDatabase extends RoomDatabase {

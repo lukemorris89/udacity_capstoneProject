@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/record_test_rootlayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -38,19 +38,17 @@
                 android:textColor="@color/colorPrimary" />
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
-
     <ScrollView
         android:id="@+id/view_test_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_height="match_parent"
         android:visibility="gone">
         <LinearLayout
             android:orientation="vertical"
-            style="@style/DashboardCard"
+            style="@style/ViewTestCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_margin="16dp"
             android:background="@android:color/white"
             android:elevation="12dp">
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -194,11 +192,10 @@
     <ScrollView
         android:id="@+id/test_results_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp">
+        android:layout_height="match_parent">
         <LinearLayout
             android:orientation="vertical"
-            style="@style/DashboardCard"
+            style="@style/ViewTestCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -208,21 +205,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:context=".ui.RecordTestActivity"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/test_id_title_edittest_textview"
                 style="@style/ViewTestTitleTextView"
                 android:text="@string/test_id"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:textSize="18sp"
                 android:visibility="gone"/>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/test_id_edittest_textview"
                 style="@style/ViewTestTextView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/test_id_title_edittest_textview"
-                android:textSize="18sp"
                 android:visibility="gone"/>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/patient_id_edittext_layout"

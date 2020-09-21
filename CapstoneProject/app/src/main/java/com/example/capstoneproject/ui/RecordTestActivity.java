@@ -1,12 +1,15 @@
 package com.example.capstoneproject.ui;
 
+import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,33 +27,39 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.capstoneproject.R;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.model.Test;
-import com.example.capstoneproject.utils.Utils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class RecordTestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LocationListener {
+public class RecordTestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     public static final String TEST_SAVED_BUNDLE_KEY = "test_saved";
     public static final String TEST_SAVED_STRING_KEY = "test_saved";
     private static final String LOG_TAG = RecordTestActivity.class.getSimpleName();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private boolean permissionDenied = false;
 
     private final int mPatientIdMinLength = 5;
     private final int mTestNotesMaxLength = 500;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager mLocationManager;
     private double mTestLatitude;
     private double mTestLongitude;
 
@@ -72,17 +81,20 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private TextView mTestIDTextView;
 
     private Test mCurrentTest;
-    private String mCurrentTestPatientID;
-    private String mCurrentTestResult;
-    private String mCurrentTestSex;
-    private String mCurrentTestAgeGroup;
-    private String mCurrentTestEthnicity;
     private List<String> mCurrentTestComorbidities;
-    private String mCurrentTestNotes;
-    private Date mCurrentTestDate;
     private String mCurrentTestDateFormatted;
     private double mCurrentTestLatitude;
     private double mCurrentTestLongitude;
+    private String mCurrentTestLocation;
+
+    private String mPatientID;
+    private String mTestResult;
+    private String mSex;
+    private String mAgeGroup;
+    private String mEthnicity;
+    private ArrayList<String> mComorbidities;
+    private String mTestNotes;
+
 
     private TestViewModel mTestViewModel;
 
@@ -142,6 +154,11 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             mTestIDTextView.setVisibility(View.VISIBLE);
             testIDTitleTextView.setVisibility(View.VISIBLE);
             new GetTestAsyncTask().execute(mTestID);
+        }
+
+        if (!isViewEditTest) {
+            getLocationPermission();
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         }
 
         Button saveButton = findViewById(R.id.save_test_button);
@@ -287,24 +304,11 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     }
 
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-    }
-
-    public void onNothingSelected(AdapterView<?> arg0) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        mTestLatitude = location.getLatitude();
-        mTestLongitude = location.getLongitude();
-    }
 
     private void saveTestResult() {
         TextInputLayout patientIdEditTextLayout = mEditTextLayouts.get(0);
-        String patientId = mEditTextInputs.get(0).getText().toString();
-        if (patientId.length() < mPatientIdMinLength) {
+        mPatientID = mEditTextInputs.get(0).getText().toString();
+        if (mPatientID.length() < mPatientIdMinLength) {
             patientIdEditTextLayout.setError("Please enter min 5 digits");
             mInvalidViews.add(patientIdEditTextLayout);
         } else {
@@ -334,56 +338,40 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             return;
         }
 
-        String testResult = mDropdownInputs.get(0).getText().toString();
-        String sex = mDropdownInputs.get(1).getText().toString();
-        String ageGroup = mDropdownInputs.get(2).getText().toString();
-        String ethnicity = mDropdownInputs.get(3).getText().toString();
+        mTestResult = mDropdownInputs.get(0).getText().toString();
+        mSex = mDropdownInputs.get(1).getText().toString();
+        mAgeGroup = mDropdownInputs.get(2).getText().toString();
+        mEthnicity = mDropdownInputs.get(3).getText().toString();
 
-        ArrayList<String> comorbidities = new ArrayList<>();
+        mComorbidities = new ArrayList<>();
         int countComorbidities = 0;
         for (int i = 0; i < mComorbiditiesCheckboxes.size(); i++) {
             if (mComorbiditiesCheckboxes.get(i).isChecked()) {
-                comorbidities.add(mComorbiditiesCheckboxes.get(i).getText().toString());
+                mComorbidities.add(mComorbiditiesCheckboxes.get(i).getText().toString());
                 countComorbidities++;
             }
         }
         if (countComorbidities == 0) {
-            comorbidities.add(getString(R.string.na));
+            mComorbidities.add(getString(R.string.na));
         }
 
         EditText testNotesEditText = findViewById(R.id.test_notes_edittext_input);
-        String testNotes = testNotesEditText.getText().toString();
-
-        Date testDate = new Date(System.currentTimeMillis());
-
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        }
-        catch(SecurityException e) {
-            if (e.getMessage() != null) {
-                Log.v(LOG_TAG, e.getMessage());
-            }
-        }
-
-        double testLatitude = mTestLatitude;
-        double testLongitude = mTestLongitude;
+        mTestNotes = testNotesEditText.getText().toString();
 
         if (isViewEditTest) {
-            Test test = new Test(mTestID, patientId, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, testLatitude, testLongitude, testDate);
+            Test test = new Test(mTestID, mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mCurrentTest.getTestLatitude(),mCurrentTest.getTestLongitude(), mCurrentTest.getTestLocation(), mCurrentTest.getTestDate());
             mTestViewModel.updateTest(test);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
         } else {
-            Test test = new Test(patientId, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, testLatitude, testLongitude, testDate);
-            mTestViewModel.insertTest(test);
+            getLocationAndSave();
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+
     }
 
     private void setUpViewTestSummary(Test test) {
-
         TextView viewTestID = findViewById(R.id.test_id_textview);
         TextView editTestID = findViewById(R.id.test_id_edittest_textview);
         viewTestID.setText(String.valueOf(test.getTestID()));
@@ -437,9 +425,11 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
         mCurrentTestLatitude = test.getTestLatitude();
         mCurrentTestLongitude = test.getTestLongitude();
-        String testLocation = mCurrentTestLatitude + ", " + mCurrentTestLongitude;
-        TextView viewTestLocation = findViewById(R.id.test_location_textview);
-        viewTestLocation.setText(testLocation);
+        mCurrentTestLocation = test.getTestLocation();
+
+        TextView locationTextView = findViewById(R.id.test_location_textview);
+        locationTextView.setText(mCurrentTestLocation);
+
     }
 
     public void hideSoftKeyboard() {
@@ -450,6 +440,77 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    //Adapterview methods
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    }
+
+    public void onNothingSelected(AdapterView<?> arg0) {
+        // TODO Auto-generated method stub
+    }
+
+    //Location methods
+    private void getLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void getLocationAndSave() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else { // You can use the API that requires the permission.
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mTestLatitude = location.getLatitude();
+                        mTestLongitude = location.getLongitude();
+
+                        Date testDate = new Date(System.currentTimeMillis());
+
+                        Geocoder geocoder = new Geocoder(RecordTestActivity.this, Locale.getDefault());
+                        StringBuilder builder = new StringBuilder();
+                        String testLocation = null;
+
+                        try {
+                            List<Address> addresses = geocoder.getFromLocation(mTestLatitude, mTestLongitude, 1);
+                            Address address = addresses.get(0);
+                            if (addresses.size() > 0) {
+                                int maxIndex = address.getMaxAddressLineIndex();
+                                for (int i = 0; i < maxIndex - 1; i++) {
+                                    builder.append(address.getAddressLine(i));
+                                    builder.append("\n");
+                                }
+                                builder.append(address.getAddressLine(maxIndex));
+                                testLocation = builder.toString();
+
+                            } else {
+                                testLocation = "N/A";
+                            }
+                            TextView viewTestLocation = findViewById(R.id.test_location_textview);
+                            viewTestLocation.setText(testLocation);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        Test test = new Test(mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mTestLatitude, mTestLongitude, testLocation, testDate);
+                        mTestViewModel.insertTest(test);
+
+                        Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            });
+        }
+    }
+
+
+
+
+
+    //Async Task to get single test by ID
     private class GetTestAsyncTask extends AsyncTask<Integer, Void, Test> {
 
         @Override

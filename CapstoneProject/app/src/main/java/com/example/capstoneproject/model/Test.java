@@ -4,6 +4,9 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Entity (tableName = "testData")
-public class Test {
+public class Test implements ClusterItem {
 
     @PrimaryKey (autoGenerate = true)
     private int mTestID;
@@ -24,12 +27,13 @@ public class Test {
     private String mTestNotes;
     private double mTestLatitude;
     private double mTestLongitude;
+    private String mTestLocation;
     private Date mTestDate;
 
     @Ignore
     public Test(int testId, String patientID, String testResult, String sex,
                 String ageGroup, String ethnicity, ArrayList<String> comorbidities,
-                String testNotes, double testLatitude, double testLongitude, Date testDate) {
+                String testNotes, double testLatitude, double testLongitude, String testLocation, Date testDate) {
         mTestID = testId;
         mPatientID = patientID;
         mTestResult = testResult;
@@ -40,12 +44,13 @@ public class Test {
         mTestNotes = testNotes;
         mTestLatitude = testLatitude;
         mTestLongitude = testLongitude;
+        mTestLocation = testLocation;
         mTestDate = testDate;
     }
 
     public Test(String patientID, String testResult, String sex,
                 String ageGroup, String ethnicity, ArrayList<String> comorbidities,
-                String testNotes, double testLatitude, double testLongitude, Date testDate) {
+                String testNotes, double testLatitude, double testLongitude, String testLocation, Date testDate) {
         mPatientID = patientID;
         mTestResult = testResult;
         mSex = sex;
@@ -55,6 +60,7 @@ public class Test {
         mTestNotes = testNotes;
         mTestLatitude = testLatitude;
         mTestLongitude = testLongitude;
+        mTestLocation = testLocation;
         mTestDate = testDate;
     }
 
@@ -138,6 +144,10 @@ public class Test {
         this.mTestLongitude = testLongitude;
     }
 
+    public String getTestLocation() {
+        return mTestLocation;
+    }
+
     public Date getTestDate() {
         return mTestDate;
     }
@@ -146,8 +156,28 @@ public class Test {
         this.mTestDate = testDate;
     }
 
-    public String getTestDateFormatted() {
-        DateFormat dateFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+    public String getTestTimeFormatted() {
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return dateFormat.format(mTestDate);
+    }
+
+    public String getTestDateFormatted() {
+        DateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy", Locale.getDefault());
+        return dateFormat.format(mTestDate);
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(mTestLatitude, mTestLongitude);
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
+    public String getSnippet() {
+        return null;
     }
 }
