@@ -16,7 +16,7 @@
             <com.example.capstoneproject.ui.DashboardProgressBar
                 android:id="@+id/wheel_progress_positive"
                 style="@style/DashboardProgressWheel"
-                app:progressBarColor="#009688"/>
+                app:progressBarColor="@color/colorPositive"/>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/wheel_progress_positive_text"
                 style="@style/DashboardProgressCounterText"/>
@@ -30,7 +30,7 @@
             <com.example.capstoneproject.ui.DashboardProgressBar
                 android:id="@+id/wheel_progress_negative"
                 style="@style/DashboardProgressWheel"
-                app:progressBarColor="#f44336"/>
+                app:progressBarColor="@color/colorNegative"/>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/wheel_progress_negative_text"
                 style="@style/DashboardProgressCounterText"/>
@@ -44,7 +44,7 @@
             <com.example.capstoneproject.ui.DashboardProgressBar
                 android:id="@+id/wheel_progress_inconclusive"
                 style="@style/DashboardProgressWheel"
-                app:progressBarColor="#ffc107"/>
+                app:progressBarColor="@color/colorInconclusive"/>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/wheel_progress_inconclusive_text"
                 style="@style/DashboardProgressCounterText"/>

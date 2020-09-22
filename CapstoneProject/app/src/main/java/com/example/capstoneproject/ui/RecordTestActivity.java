@@ -4,13 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,39 +25,45 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.capstoneproject.R;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.model.Test;
+import com.example.capstoneproject.utils.LocationHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class RecordTestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    public static final String TEST_SAVED_BUNDLE_KEY = "test_saved";
-    public static final String TEST_SAVED_STRING_KEY = "test_saved";
     private static final String LOG_TAG = RecordTestActivity.class.getSimpleName();
+
+    private long UPDATE_INTERVAL = 60 * 1000;  /* 60 secs */
+    private long FASTEST_INTERVAL = 2000; /* 2 sec */
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private final int mPatientIdMinLength = 5;
-    private final int mTestNotesMaxLength = 500;
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationManager mLocationManager;
     private double mTestLatitude;
     private double mTestLongitude;
 
@@ -83,8 +87,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private Test mCurrentTest;
     private List<String> mCurrentTestComorbidities;
     private String mCurrentTestDateFormatted;
-    private double mCurrentTestLatitude;
-    private double mCurrentTestLongitude;
     private String mCurrentTestLocation;
 
     private String mPatientID;
@@ -94,7 +96,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private String mEthnicity;
     private ArrayList<String> mComorbidities;
     private String mTestNotes;
-
+    private Date mTestDate;
 
     private TestViewModel mTestViewModel;
 
@@ -154,11 +156,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             mTestIDTextView.setVisibility(View.VISIBLE);
             testIDTitleTextView.setVisibility(View.VISIBLE);
             new GetTestAsyncTask().execute(mTestID);
-        }
-
-        if (!isViewEditTest) {
-            getLocationPermission();
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        } else  {
+            startLocationUpdates();
         }
 
         Button saveButton = findViewById(R.id.save_test_button);
@@ -280,9 +279,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                        dropdownLayout.setError(null);
-                    }
-
+                    dropdownLayout.setError(null);
+                }
 
                 @Override
                 public void afterTextChanged(Editable editable) {
@@ -319,8 +317,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             TextInputLayout dropdownLayout = mDropdownLayouts.get(i);
             AutoCompleteTextView dropdownInput = mDropdownInputs.get(i);
             if (dropdownInput.getText().toString().isEmpty()) {
-                    dropdownLayout.setError(mDropdownErrorTextList.get(i));
-                    mInvalidViews.add(dropdownInput);
+                dropdownLayout.setError(mDropdownErrorTextList.get(i));
+                mInvalidViews.add(dropdownInput);
             } else {
                 dropdownLayout.setError(null);
             }
@@ -355,6 +353,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             mComorbidities.add(getString(R.string.na));
         }
 
+        mTestDate = new Date(System.currentTimeMillis());
+
         EditText testNotesEditText = findViewById(R.id.test_notes_edittext_input);
         mTestNotes = testNotesEditText.getText().toString();
 
@@ -365,10 +365,16 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             startActivity(intent);
             finish();
         } else {
-            getLocationAndSave();
+            LocationHelper locationHelper = new LocationHelper(this);
+            String location = locationHelper.getAddress(mTestLatitude, mTestLongitude);
+//
+            Test test = new Test(mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mTestLatitude, mTestLongitude, location, mTestDate);
+            mTestViewModel.insertTest(test);
+//
+            Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         }
-
-
     }
 
     private void setUpViewTestSummary(Test test) {
@@ -423,13 +429,10 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         TextView viewTestDate = findViewById(R.id.test_date_textview);
         viewTestDate.setText(mCurrentTestDateFormatted);
 
-        mCurrentTestLatitude = test.getTestLatitude();
-        mCurrentTestLongitude = test.getTestLongitude();
         mCurrentTestLocation = test.getTestLocation();
 
         TextView locationTextView = findViewById(R.id.test_location_textview);
         locationTextView.setText(mCurrentTestLocation);
-
     }
 
     public void hideSoftKeyboard() {
@@ -449,67 +452,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         // TODO Auto-generated method stub
     }
 
-    //Location methods
-    private void getLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    private void getLocationAndSave() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else { // You can use the API that requires the permission.
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mTestLatitude = location.getLatitude();
-                        mTestLongitude = location.getLongitude();
-
-                        Date testDate = new Date(System.currentTimeMillis());
-
-                        Geocoder geocoder = new Geocoder(RecordTestActivity.this, Locale.getDefault());
-                        StringBuilder builder = new StringBuilder();
-                        String testLocation = null;
-
-                        try {
-                            List<Address> addresses = geocoder.getFromLocation(mTestLatitude, mTestLongitude, 1);
-                            Address address = addresses.get(0);
-                            if (addresses.size() > 0) {
-                                int maxIndex = address.getMaxAddressLineIndex();
-                                for (int i = 0; i < maxIndex - 1; i++) {
-                                    builder.append(address.getAddressLine(i));
-                                    builder.append("\n");
-                                }
-                                builder.append(address.getAddressLine(maxIndex));
-                                testLocation = builder.toString();
-
-                            } else {
-                                testLocation = "N/A";
-                            }
-                            TextView viewTestLocation = findViewById(R.id.test_location_textview);
-                            viewTestLocation.setText(testLocation);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        Test test = new Test(mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mTestLatitude, mTestLongitude, testLocation, testDate);
-                        mTestViewModel.insertTest(test);
-
-                        Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                }
-            });
-        }
-    }
-
-
-
-
-
     //Async Task to get single test by ID
     private class GetTestAsyncTask extends AsyncTask<Integer, Void, Test> {
 
@@ -523,5 +465,66 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         protected void onPostExecute(Test test) {
             setUpViewTestSummary(test);
         }
+    }
+
+    //Location Methods
+    protected void startLocationUpdates() {
+        // Create the location request to start receiving updates
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+
+        // Create LocationSettingsRequest object using location request
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        LocationSettingsRequest locationSettingsRequest = builder.build();
+
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        // do work here
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                },
+                Looper.myLooper());
+    }
+
+    public void onLocationChanged(Location location) {
+        mTestLatitude = location.getLatitude();
+        mTestLongitude = location.getLongitude();
+    }
+
+    public void getLastLocation() {
+        // Get last known recent location using new Google Play Services SDK (v11+)
+        FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+        locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // GPS location can be null if GPS is switched off
+                if (location != null) {
+                    onLocationChanged(location);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("MapDemoActivity", "Error trying to get last GPS location");
+                e.printStackTrace();
+            }
+        });
     }
 }

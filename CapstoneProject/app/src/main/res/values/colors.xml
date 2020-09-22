@@ -5,4 +5,7 @@
     <color name="colorAccent">#1497a8</color>
     <color name="tabColorSelected">@android:color/white</color>
     <color name="tabColor">#99FFFFFF</color>
+    <color name="colorPositive">#009688</color>
+    <color name="colorNegative">#f44336</color>
+    <color name="colorInconclusive">#ffc107</color>
 </resources>

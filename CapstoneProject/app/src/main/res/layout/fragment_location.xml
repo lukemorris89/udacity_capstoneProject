@@ -9,4 +9,34 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="@android:color/white"
+        android:layout_margin="16dp"
+        android:paddingRight="16dp"
+        android:elevation="8dp"
+        android:orientation="vertical">
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/filter_checkbox_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/positive"
+            android:checked="true"/>
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/filter_checkbox_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/negative"
+            android:checked="true"/>
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/filter_checkbox_inconclusive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/inconclusive"
+            android:checked="true"/>
+    </LinearLayout>
+
+
 </FrameLayout>
