@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class DashboardFragment extends Fragment {
     private List<ImageButton> mExpandButtonsList;
     private List<TextView> mNoResultsTextViewsList;
     private List<LinearLayout> mRecyclerViewContainersList;
+    private List<View> mRecyclerViewTitleList;
     private List<DashboardProgressBar> mDashboardProgressBarsList;
 
     private TestViewModel mTestViewModel;
@@ -95,6 +97,11 @@ public class DashboardFragment extends Fragment {
         mRecyclerViewContainersList.add(view.findViewById(R.id.recyclerview_negative_container));
         mRecyclerViewContainersList.add(view.findViewById(R.id.recyclerview_inconclusive_container));
 
+        mRecyclerViewTitleList = new ArrayList<>();
+        mRecyclerViewTitleList.add(view.findViewById(R.id.recyclerview_positive_title));
+        mRecyclerViewTitleList.add(view.findViewById(R.id.recyclerview_negative_title));
+        mRecyclerViewTitleList.add(view.findViewById(R.id.recyclerview_inconclusive_title));
+
         for (int i = 0; i < mTestResultOptions.length; i++) {
             RecyclerView currentRecyclerView = mRecyclerViewsList.get(i);
             setUpExpandFunctionality(i);
@@ -153,10 +160,6 @@ public class DashboardFragment extends Fragment {
         mDashboardProgressBarTextViewsList.get(index).setText(String.valueOf(size));
     }
 
-//    private void collapseAllRecyclerViews() {
-//        Arrays.fill(isSelected, false);
-//    }
-
     private void setRecyclerViewHeight(int index) {
         if (mRecyclerViewsList.get(index).getAdapter() != null) {
             int listLength = mRecyclerViewsList.get(index).getAdapter().getItemCount();
@@ -168,12 +171,15 @@ public class DashboardFragment extends Fragment {
             if (listLength > 0) {
                 noResultsViewParams.height = 0;
                 if (isSelected[index]) {
+                    mRecyclerViewTitleList.get(index).setVisibility(View.VISIBLE);
                     recyclerViewParams.height = containerHeight;
                 } else {
+                    mRecyclerViewTitleList.get(index).setVisibility(View.GONE);
                     recyclerViewParams.height = 0;
                 }
                 mRecyclerViewContainersList.get(index).setLayoutParams(recyclerViewParams);
             } else {
+                mRecyclerViewTitleList.get(index).setVisibility(View.GONE);
                 if (isSelected[index]) {
                     noResultsViewParams.height = 180;
                 } else {

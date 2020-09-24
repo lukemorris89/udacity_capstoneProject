@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:background="@android:color/white"
+    android:elevation="8dp"
+    android:visibility="gone">
+    <TextView
+        style="@style/DashboardResultsRecyclerViewText"
+        android:layout_weight="2"
+        android:text="@string/test_id"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"/>
+    <TextView
+        style="@style/DashboardResultsRecyclerViewText"
+        android:layout_weight="3"
+        android:text="@string/patient_id"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"/>
+    <TextView
+        style="@style/DashboardResultsRecyclerViewText"
+        android:layout_weight="3"
+        android:text="@string/test_date"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"/>
+    <TextView
+        style="@style/DashboardResultsRecyclerViewText"
+        android:layout_weight="2"/>
+</LinearLayout>

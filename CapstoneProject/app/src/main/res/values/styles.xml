@@ -40,7 +40,6 @@
     <style name="DashboardProgressCounterText" parent="DashboardProgressBase">
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:text">100</item>
         <item name="android:paddingBottom">16dp</item>
     </style>
 
