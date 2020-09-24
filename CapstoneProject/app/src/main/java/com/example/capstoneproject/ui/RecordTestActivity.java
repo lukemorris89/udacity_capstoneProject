@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -75,6 +76,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private List<TextInputLayout> mDropdownLayouts;
     private List<EditText> mEditTextInputs;
     private List<AutoCompleteTextView> mDropdownInputs;
+    private List<List<String>> mDropdownInputsLists;
+
     private List<String> mDropdownErrorTextList;
     private List<View> mInvalidViews;
     private List<CheckBox> mComorbiditiesCheckboxes;
@@ -206,11 +209,11 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownInputs.add(findViewById(R.id.age_test_result_dropdown));
         mDropdownInputs.add(findViewById(R.id.ethnicity_test_result_dropdown));
 
-        List<List<String>> dropdownInputsLists = new ArrayList<>();
-        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.result_options)));
-        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.sex_options)));
-        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.age_groups)));
-        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.ethnicity_options)));
+        mDropdownInputsLists = new ArrayList<>();
+        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.result_options)));
+        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.sex_options)));
+        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.age_groups)));
+        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.ethnicity_options)));
 
         mDropdownLayouts = new ArrayList<>();
         mDropdownLayouts.add(findViewById(R.id.test_result_dropdown_layout));
@@ -219,7 +222,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownLayouts.add(findViewById(R.id.ethnicity_dropdown_layout));
 
         for (int i = 0; i < mDropdownInputs.size(); i++) {
-            mDropdownInputs.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_custom_textview, dropdownInputsLists.get(i)));
+            mDropdownInputs.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_custom_textview, mDropdownInputsLists.get(i)));
+            mDropdownInputs.get(i).setThreshold(200);
         }
         setUpDropdownValidation();
     }
