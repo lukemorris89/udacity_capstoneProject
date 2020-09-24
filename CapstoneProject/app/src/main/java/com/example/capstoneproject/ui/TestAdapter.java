@@ -14,6 +14,9 @@ import com.example.capstoneproject.R;
 import com.example.capstoneproject.model.Test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder> {
@@ -39,7 +42,18 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
             Test current = mTestsList.get(position);
             holder.testIdTextView.setText(String.valueOf(current.getTestID()));
             holder.patientIdTextView.setText(current.getPatientID());
-            holder.dateTimeTextView.setText(current.getTestTimeFormatted());
+            Calendar date = new GregorianCalendar();
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+            Date todayDate = date.getTime();
+            if (current.getTestDate().compareTo(todayDate) < 0) {
+                holder.dateTimeTextView.setText(current.getTestDateFormatted());
+            }
+            else {
+                holder.dateTimeTextView.setText(current.getTestTimeFormatted());
+            }
             holder.viewTestTextView.setOnClickListener(view -> {
                 Intent intent = new Intent(mContext, RecordTestActivity.class);
                 intent.putExtra("test_id", current.getTestID());
@@ -47,8 +61,6 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
             });
         }
     }
-
-
 
     public void setTests(List<Test> tests){
         mTestsList.clear();

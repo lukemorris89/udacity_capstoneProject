@@ -8,11 +8,11 @@
     <string name="dashboard">Dashboard</string>
     <string name="map">Map</string>
     <string name="trends">Trends</string>
-    <string name="symptom_5">Symptom 5</string>
-    <string name="symptom_4">Symptom 4</string>
-    <string name="symptom_3">Symptom 3</string>
-    <string name="symptom_2">Symptom 2</string>
-    <string name="symptom_1">Symptom 1</string>
+    <string name="symptom_5">Comorbidity 5</string>
+    <string name="symptom_4">Comorbidity 4</string>
+    <string name="symptom_3">Comorbidity 3</string>
+    <string name="symptom_2">Comorbidity 2</string>
+    <string name="symptom_1">Comorbidity 1</string>
     <string name="save_test">Save Test</string>
     <string name="na">N/A</string>
     <string name="date_time">Date Time</string>

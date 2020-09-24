@@ -13,8 +13,6 @@ import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPagerAdapter mViewPagerAdapter;
-    private ViewPager mViewPager;
     private int[] tabIcons = {
             R.drawable.ic_baseline_dashboard_24,
             R.drawable.ic_baseline_map_24,
@@ -26,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPager = findViewById(R.id.view_pager);
-        mViewPager.setAdapter(mViewPagerAdapter);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(viewPagerAdapter);
         TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(viewPager);
         for (int i=0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(tabIcons[i]);
         }
@@ -55,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new GraphFragment();
                     break;
             }
+            assert fragment != null;
             return fragment;
         }
 

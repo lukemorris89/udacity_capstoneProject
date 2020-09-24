@@ -1,22 +1,19 @@
 package com.example.capstoneproject.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -26,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -37,17 +33,12 @@ import com.example.capstoneproject.R;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.model.Test;
 import com.example.capstoneproject.utils.LocationHelper;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -56,10 +47,6 @@ import java.util.Date;
 import java.util.List;
 
 public class RecordTestActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private static final String LOG_TAG = RecordTestActivity.class.getSimpleName();
-
-    private long UPDATE_INTERVAL = 60 * 1000;  /* 60 secs */
-    private long FASTEST_INTERVAL = 2000; /* 2 sec */
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -76,7 +63,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private List<TextInputLayout> mDropdownLayouts;
     private List<EditText> mEditTextInputs;
     private List<AutoCompleteTextView> mDropdownInputs;
-    private List<List<String>> mDropdownInputsLists;
 
     private List<String> mDropdownErrorTextList;
     private List<View> mInvalidViews;
@@ -85,21 +71,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private Button mEditTestButton;
     private ScrollView mRecordEditTestScrollView;
     private ScrollView mViewTestScrollView;
-    private TextView mTestIDTextView;
 
     private Test mCurrentTest;
-    private List<String> mCurrentTestComorbidities;
-    private String mCurrentTestDateFormatted;
-    private String mCurrentTestLocation;
-
-    private String mPatientID;
-    private String mTestResult;
-    private String mSex;
-    private String mAgeGroup;
-    private String mEthnicity;
-    private ArrayList<String> mComorbidities;
-    private String mTestNotes;
-    private Date mTestDate;
 
     private TestViewModel mTestViewModel;
 
@@ -117,23 +90,20 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mRecordEditTestScrollView = findViewById(R.id.test_results_scrollview);
         mViewTestScrollView = findViewById(R.id.view_test_scrollview);
         TextView testIDTitleTextView = findViewById(R.id.test_id_title_edittest_textview);
-        mTestIDTextView = findViewById(R.id.test_id_edittest_textview);
+        TextView testIDTextView = findViewById(R.id.test_id_edittest_textview);
 
         final boolean[] isEditable = {false};
-        mEditTestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isEditable[0]) {
-                    mRecordEditTestScrollView.setVisibility(View.GONE);
-                    mViewTestScrollView.setVisibility(View.VISIBLE);
-                    mEditTestButton.setText(R.string.edit_test);
-                    isEditable[0] = false;
-                } else {
-                    mRecordEditTestScrollView.setVisibility(View.VISIBLE);
-                    mViewTestScrollView.setVisibility(View.GONE);
-                    mEditTestButton.setText(R.string.cancel);
-                    isEditable[0] = true;
-                }
+        mEditTestButton.setOnClickListener(view -> {
+            if (isEditable[0]) {
+                mRecordEditTestScrollView.setVisibility(View.GONE);
+                mViewTestScrollView.setVisibility(View.VISIBLE);
+                mEditTestButton.setText(R.string.edit_test);
+                isEditable[0] = false;
+            } else {
+                mRecordEditTestScrollView.setVisibility(View.VISIBLE);
+                mViewTestScrollView.setVisibility(View.GONE);
+                mEditTestButton.setText(R.string.cancel);
+                isEditable[0] = true;
             }
         });
 
@@ -156,7 +126,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             mEditTestButton.setVisibility(View.VISIBLE);
             mRecordEditTestScrollView.setVisibility(View.GONE);
             mViewTestScrollView.setVisibility(View.VISIBLE);
-            mTestIDTextView.setVisibility(View.VISIBLE);
+            testIDTextView.setVisibility(View.VISIBLE);
             testIDTitleTextView.setVisibility(View.VISIBLE);
             new GetTestAsyncTask().execute(mTestID);
         } else  {
@@ -167,17 +137,14 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         saveButton.setOnClickListener(view -> saveTestResult());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void setupUI(View view) {
-        // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText) || view instanceof AutoCompleteTextView) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    hideSoftKeyboard();
-                    return false;
-                }
+            view.setOnTouchListener((v, event) -> {
+                hideSoftKeyboard();
+                return false;
             });
         }
-        //If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
                 View innerView = ((ViewGroup) view).getChildAt(i);
@@ -209,11 +176,11 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownInputs.add(findViewById(R.id.age_test_result_dropdown));
         mDropdownInputs.add(findViewById(R.id.ethnicity_test_result_dropdown));
 
-        mDropdownInputsLists = new ArrayList<>();
-        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.result_options)));
-        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.sex_options)));
-        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.age_groups)));
-        mDropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.ethnicity_options)));
+        List<List<String>> dropdownInputsLists = new ArrayList<>();
+        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.result_options)));
+        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.sex_options)));
+        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.age_groups)));
+        dropdownInputsLists.add(Arrays.asList(getResources().getStringArray(R.array.ethnicity_options)));
 
         mDropdownLayouts = new ArrayList<>();
         mDropdownLayouts.add(findViewById(R.id.test_result_dropdown_layout));
@@ -222,7 +189,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownLayouts.add(findViewById(R.id.ethnicity_dropdown_layout));
 
         for (int i = 0; i < mDropdownInputs.size(); i++) {
-            mDropdownInputs.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_custom_textview, mDropdownInputsLists.get(i)));
+            mDropdownInputs.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_custom_textview, dropdownInputsLists.get(i)));
             mDropdownInputs.get(i).setThreshold(200);
         }
         setUpDropdownValidation();
@@ -291,26 +258,21 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
                 }
             };
             dropdownInput.addTextChangedListener(dropdownTextWatcher);
-            dropdownInput.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    if (dropdownInput.getText().toString().isEmpty()) {
-                        dropdownLayout.setError(mDropdownErrorTextList.get(finalI));
-                        mInvalidViews.add(mDropdownInputs.get(finalI));
-                    } else {
-                        dropdownLayout.setError(null);
-                    }
+            dropdownInput.setOnDismissListener(() -> {
+                if (dropdownInput.getText().toString().isEmpty()) {
+                    dropdownLayout.setError(mDropdownErrorTextList.get(finalI));
+                    mInvalidViews.add(mDropdownInputs.get(finalI));
+                } else {
+                    dropdownLayout.setError(null);
                 }
             });
         }
     }
 
-
-
     private void saveTestResult() {
         TextInputLayout patientIdEditTextLayout = mEditTextLayouts.get(0);
-        mPatientID = mEditTextInputs.get(0).getText().toString();
-        if (mPatientID.length() < mPatientIdMinLength) {
+        String patientID = mEditTextInputs.get(0).getText().toString();
+        if (patientID.length() < mPatientIdMinLength) {
             patientIdEditTextLayout.setError("Please enter min 5 digits");
             mInvalidViews.add(patientIdEditTextLayout);
         } else {
@@ -329,41 +291,38 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         }
 
         if (mInvalidViews.size() > 0) {
-            mRecordEditTestScrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mInvalidViews.get(0).requestFocus();
-                    mRecordEditTestScrollView.scrollTo(0, mInvalidViews.get(0).getBottom());
-                    mInvalidViews.clear();
-                }
+            mRecordEditTestScrollView.post(() -> {
+                mInvalidViews.get(0).requestFocus();
+                mRecordEditTestScrollView.scrollTo(0, mInvalidViews.get(0).getBottom());
+                mInvalidViews.clear();
             });
             return;
         }
 
-        mTestResult = mDropdownInputs.get(0).getText().toString();
-        mSex = mDropdownInputs.get(1).getText().toString();
-        mAgeGroup = mDropdownInputs.get(2).getText().toString();
-        mEthnicity = mDropdownInputs.get(3).getText().toString();
+        String testResult = mDropdownInputs.get(0).getText().toString();
+        String sex = mDropdownInputs.get(1).getText().toString();
+        String ageGroup = mDropdownInputs.get(2).getText().toString();
+        String ethnicity = mDropdownInputs.get(3).getText().toString();
 
-        mComorbidities = new ArrayList<>();
+        ArrayList<String> comorbidities = new ArrayList<>();
         int countComorbidities = 0;
         for (int i = 0; i < mComorbiditiesCheckboxes.size(); i++) {
             if (mComorbiditiesCheckboxes.get(i).isChecked()) {
-                mComorbidities.add(mComorbiditiesCheckboxes.get(i).getText().toString());
+                comorbidities.add(mComorbiditiesCheckboxes.get(i).getText().toString());
                 countComorbidities++;
             }
         }
         if (countComorbidities == 0) {
-            mComorbidities.add(getString(R.string.na));
+            comorbidities.add(getString(R.string.na));
         }
 
-        mTestDate = new Date(System.currentTimeMillis());
+        Date testDate = new Date(System.currentTimeMillis());
 
         EditText testNotesEditText = findViewById(R.id.test_notes_edittext_input);
-        mTestNotes = testNotesEditText.getText().toString();
+        String testNotes = testNotesEditText.getText().toString();
 
         if (isViewEditTest) {
-            Test test = new Test(mTestID, mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mCurrentTest.getTestLatitude(),mCurrentTest.getTestLongitude(), mCurrentTest.getTestLocation(), mCurrentTest.getTestDate());
+            Test test = new Test(mTestID, patientID, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, mCurrentTest.getTestLatitude(),mCurrentTest.getTestLongitude(), mCurrentTest.getTestLocation(), mCurrentTest.getTestDate());
             mTestViewModel.updateTest(test);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -372,7 +331,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             LocationHelper locationHelper = new LocationHelper(this);
             String location = locationHelper.getAddress(mTestLatitude, mTestLongitude);
 //
-            Test test = new Test(mPatientID, mTestResult, mSex, mAgeGroup, mEthnicity, mComorbidities, mTestNotes, mTestLatitude, mTestLongitude, location, mTestDate);
+            Test test = new Test(patientID, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, mTestLatitude, mTestLongitude, location, testDate);
             mTestViewModel.insertTest(test);
 //
             Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
@@ -408,18 +367,18 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         mDropdownInputs.get(3).setText(test.getEthnicity());
 
         TextView viewTestComorbidities = findViewById(R.id.comorbidities_textview);
-        mCurrentTestComorbidities = test.getComorbidities();
+        List<String> currentTestComorbidities = test.getComorbidities();
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < mCurrentTestComorbidities.size() - 1; i++) {
-            builder.append(mCurrentTestComorbidities.get(i));
+        for (int i = 0; i < currentTestComorbidities.size() - 1; i++) {
+            builder.append(currentTestComorbidities.get(i));
             builder.append(", ");
         }
-        builder.append(mCurrentTestComorbidities.get(mCurrentTestComorbidities.size()-1));
+        builder.append(currentTestComorbidities.get(currentTestComorbidities.size()-1));
         String comorbiditiesString = builder.toString();
         viewTestComorbidities.setText(comorbiditiesString);
-        for (int i = 0; i < mCurrentTestComorbidities.size() ; i++) {
+        for (int i = 0; i < currentTestComorbidities.size() ; i++) {
             for (int j = 0; j < mComorbiditiesCheckboxes.size(); j++) {
-                if (mComorbiditiesCheckboxes.get(j).getText().equals(mCurrentTestComorbidities.get(i))) {
+                if (mComorbiditiesCheckboxes.get(j).getText().equals(currentTestComorbidities.get(i))) {
                     mComorbiditiesCheckboxes.get(j).setChecked(true);
                 }
             }
@@ -429,14 +388,14 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         viewTestNotes.setText(test.getTestNotes());
         mEditTextInputs.get(1).setText(test.getTestNotes());
 
-        mCurrentTestDateFormatted = test.getTestDateFormatted();
+        String currentTestDateFormatted = test.getTestDateFormatted();
         TextView viewTestDate = findViewById(R.id.test_date_textview);
-        viewTestDate.setText(mCurrentTestDateFormatted);
+        viewTestDate.setText(currentTestDateFormatted);
 
-        mCurrentTestLocation = test.getTestLocation();
+        String currentTestLocation = test.getTestLocation();
 
         TextView locationTextView = findViewById(R.id.test_location_textview);
-        locationTextView.setText(mCurrentTestLocation);
+        locationTextView.setText(currentTestLocation);
     }
 
     public void hideSoftKeyboard() {
@@ -473,23 +432,16 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
     //Location Methods
     protected void startLocationUpdates() {
-        // Create the location request to start receiving updates
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
-        // Create LocationSettingsRequest object using location request
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
         SettingsClient settingsClient = LocationServices.getSettingsClient(this);
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
@@ -506,29 +458,5 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     public void onLocationChanged(Location location) {
         mTestLatitude = location.getLatitude();
         mTestLongitude = location.getLongitude();
-    }
-
-    public void getLastLocation() {
-        // Get last known recent location using new Google Play Services SDK (v11+)
-        FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-        locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // GPS location can be null if GPS is switched off
-                if (location != null) {
-                    onLocationChanged(location);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("MapDemoActivity", "Error trying to get last GPS location");
-                e.printStackTrace();
-            }
-        });
     }
 }

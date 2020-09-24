@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
-    private static final String LOG_TAG = DashboardFragment.class.getSimpleName();
 
     private List<TextView> mDashboardProgressBarTextViewsList;
     private List<RecyclerView> mRecyclerViewsList;
@@ -38,7 +36,6 @@ public class DashboardFragment extends Fragment {
     private List<TextView> mNoResultsTextViewsList;
     private List<LinearLayout> mRecyclerViewContainersList;
     private List<View> mRecyclerViewTitleList;
-    private List<DashboardProgressBar> mDashboardProgressBarsList;
 
     private TestViewModel mTestViewModel;
 
@@ -62,10 +59,10 @@ public class DashboardFragment extends Fragment {
         Context context = getContext();
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        mDashboardProgressBarsList = new ArrayList<>();
-        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_positive));
-        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_negative));
-        mDashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_inconclusive));
+        List<DashboardProgressBar> dashboardProgressBarsList = new ArrayList<>();
+        dashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_positive));
+        dashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_negative));
+        dashboardProgressBarsList.add(view.findViewById(R.id.wheel_progress_inconclusive));
 
         mDashboardProgressBarTextViewsList = new ArrayList<>();
         mDashboardProgressBarTextViewsList.add(view.findViewById(R.id.wheel_progress_positive_text));
@@ -126,7 +123,7 @@ public class DashboardFragment extends Fragment {
                 updateDashboardSummaryCard(finalI, tests.size());
                 setRecyclerViewHeight(finalI);
             });
-            setUpSummaryBarObserver(mDashboardProgressBarsList.get(i));
+            setUpSummaryBarObserver(dashboardProgressBarsList.get(i));
         }
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
@@ -207,12 +204,9 @@ public class DashboardFragment extends Fragment {
         animator.setInterpolator(new LinearInterpolator());
         animator.setStartDelay(0);
         animator.setDuration(300);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int value = (int) valueAnimator.getAnimatedValue();
-                progressBar.setProgress(value);
-            }
+        animator.addUpdateListener(valueAnimator -> {
+            int value = (int) valueAnimator.getAnimatedValue();
+            progressBar.setProgress(value);
         });
         animator.start();
     }

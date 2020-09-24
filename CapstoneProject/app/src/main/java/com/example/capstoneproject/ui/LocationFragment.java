@@ -41,10 +41,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class LocationFragment extends Fragment implements OnMapReadyCallback,
@@ -54,7 +56,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
         ClusterManager.OnClusterItemInfoWindowClickListener<Test> {
 
     private Context mContext;
-    private MapView mapView;
     private GoogleMap googleMap;
     private ClusterManager<Test> mClusterManager;
     private Cluster<Test> mClickedCluster;
@@ -65,10 +66,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
     private List<String> mTestResultOptions;
     private float[] mMarkerColors = { 174.0f, 4.0f, 45.0f };
     private List<CheckBox> mFilterCheckboxes;
-    private LocationRequest mLocationRequest;
-    private double mCurrentLatitude;
-    private double mCurrentLongitude;
-    private LatLng mCurrentLocation;
 
     private float mMapZoomLevel = 12;
     private boolean mMapZoomLevelChanged = false;
@@ -100,19 +97,14 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
         mFilterCheckboxes.add(view.findViewById(R.id.filter_checkbox_negative));
         mFilterCheckboxes.add(view.findViewById(R.id.filter_checkbox_inconclusive));
         for (CheckBox checkBox: mFilterCheckboxes) {
-            checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    checkMapFilters();
-                }
-            });
+            checkBox.setOnClickListener(view1 -> checkMapFilters());
         }
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mapView = (MapView) view.findViewById(R.id.map);
+        MapView mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
@@ -125,19 +117,9 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
 
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                mMapZoomLevelChanged = true;
-            }
-        });
+        googleMap.setOnCameraMoveListener(() -> mMapZoomLevelChanged = true);
         mClusterManager = new ClusterManager<>(mContext, googleMap);
-        googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                mClusterManager.cluster();
-            }
-        });
+        googleMap.setOnCameraIdleListener(() -> mClusterManager.cluster());
 
         for (int i = 0; i < mTestResultOptions.size(); i++) {
             mAllTestsGrouped.add(new ArrayList<>());
@@ -173,20 +155,14 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
         mClusterManager.setOnClusterItemClickListener(this);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
         mClusterManager
-                .setOnClusterClickListener(new ClusterManager.OnClusterClickListener<Test>() {
-                    @Override
-                    public boolean onClusterClick(Cluster<Test> cluster) {
-                        mClickedCluster = cluster;
-                        return false;
-                    }
+                .setOnClusterClickListener(cluster -> {
+                    mClickedCluster = cluster;
+                    return false;
                 });
         mClusterManager
-                .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Test>() {
-                    @Override
-                    public boolean onClusterItemClick(Test test) {
-                        mClickedClusterItem = test;
-                        return false;
-                    }
+                .setOnClusterItemClickListener(test -> {
+                    mClickedClusterItem = test;
+                    return false;
                 });
         if (countChecked > 0) {
             for (int i = 0; i < countChecked; i++) {
@@ -205,45 +181,38 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
     }
 
     protected void startLocationUpdates() {
-        // Create the location request to start receiving updates
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setNumUpdates(1);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setNumUpdates(1);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        // Create LocationSettingsRequest object using location request
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
+        builder.addLocationRequest(locationRequest);
         LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
         SettingsClient settingsClient = LocationServices.getSettingsClient(mContext);
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && getActivity() != null) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
-            LocationServices.getFusedLocationProviderClient(mContext).requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                        @Override
-                        public void onLocationResult(LocationResult locationResult) {
-                            // do work here
-                            onLocationChanged(locationResult.getLastLocation());
-                        }
-                    },
-                    Looper.myLooper());
+        LocationServices.getFusedLocationProviderClient(mContext).requestLocationUpdates(locationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        // do work here
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                },
+                Looper.myLooper());
     }
 
     public void onLocationChanged(Location location) {
-        mCurrentLatitude = location.getLatitude();
-        mCurrentLongitude = location.getLongitude();
-        mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
         if (googleMap != null) {
             if (mMapZoomLevelChanged) {
                 mMapZoomLevel = googleMap.getCameraPosition().zoom;
             }
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLocation, mMapZoomLevel));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, mMapZoomLevel));
         }
     }
 
@@ -264,9 +233,9 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onClusterItemInfoWindowClick(Test test) {
-                Intent intent = new Intent(mContext, RecordTestActivity.class);
-                intent.putExtra("test_id", mClickedClusterItem.getTestID());
-                mContext.startActivity(intent);
+        Intent intent = new Intent(mContext, RecordTestActivity.class);
+        intent.putExtra("test_id", mClickedClusterItem.getTestID());
+        mContext.startActivity(intent);
     }
 
     private class CustomClusterRenderer extends DefaultClusterRenderer<Test> {
@@ -361,18 +330,25 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
                 testIdTextView.setText(String.valueOf(mClickedClusterItem.getTestID()));
                 patientIdTextView.setText(mClickedClusterItem.getPatientID());
                 testResultTextView.setText(mClickedClusterItem.getTestResult());
-                testDateTextView.setText(mClickedClusterItem.getTestDateFormatted());
-                viewTestButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(mContext, RecordTestActivity.class);
-                        intent.putExtra("test_id", mClickedClusterItem.getTestID());
-                        mContext.startActivity(intent);
-                    }
+                Calendar date = new GregorianCalendar();
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+                date.set(Calendar.MILLISECOND, 0);
+                Date todayDate = date.getTime();
+                if (mClickedClusterItem.getTestDate().compareTo(todayDate) < 0) {
+                    testDateTextView.setText(mClickedClusterItem.getTestDateFormatted());
+                }
+                else {
+                    testDateTextView.setText(mClickedClusterItem.getTestTimeFormatted());
+                }
+                viewTestButton.setOnClickListener(view -> {
+                    Intent intent = new Intent(mContext, RecordTestActivity.class);
+                    intent.putExtra("test_id", mClickedClusterItem.getTestID());
+                    mContext.startActivity(intent);
                 });
             }
             return mClusterItemView;
         }
     }
-
 }

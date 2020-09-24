@@ -39,7 +39,6 @@ public class GraphFragment extends Fragment {
     private LineChart mLineChart;
     private TestViewModel mTestViewModel;
     private List<Integer> mLineColors;
-    private String[] mTestResultOptionsArray = { "Positive", "Negative", "Inconclusive" };
 
 
     public GraphFragment() {
@@ -67,7 +66,10 @@ public class GraphFragment extends Fragment {
         mLineChart.setAutoScaleMinMaxEnabled(true);
         mLineChart.setDescription(null);
         mLineChart.setNoDataText("No data added yet.");
+        mLineChart.setExtraOffsets(0f,5f,20f,15f);
+
         XAxis xAxis = mLineChart.getXAxis();
+        Legend xAxisLegend = mLineChart.getLegend();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);
@@ -75,6 +77,11 @@ public class GraphFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(16f);
         xAxis.setValueFormatter(new XAxisValueFormatter());
+        xAxisLegend.setWordWrapEnabled(true);
+        xAxisLegend.setForm(Legend.LegendForm.CIRCLE);
+        xAxisLegend.setXEntrySpace(20);
+        xAxisLegend.setTextSize(14f);
+
         YAxis yAxis = mLineChart.getAxisLeft();
         yAxis.setDrawGridLines(false);
         yAxis.setStartAtZero(true);
@@ -83,8 +90,6 @@ public class GraphFragment extends Fragment {
         yAxis.setTextSize(16f);
         YAxis yAxisRight = mLineChart.getAxisRight();
         yAxisRight.setEnabled(false);
-        Legend xAxisLegend = mLineChart.getLegend();
-        xAxisLegend.setTextSize(14f);
 
         mTestViewModel.getAllTests().observe(getViewLifecycleOwner(), tests -> {
             List<Entry> positivePlotPoints = new ArrayList<>();
@@ -100,22 +105,16 @@ public class GraphFragment extends Fragment {
                 try {
                     DateFormat format = new SimpleDateFormat("d/MM/yyyy", Locale.getDefault());
                     Date floorDate = format.parse(format.format(date));
-                    long timeInDays = TimeUnit.MILLISECONDS.toDays(floorDate.getTime());
-                    testDatesSet.add(timeInDays);
+                    if (floorDate != null) {
+                        long timeInDays = TimeUnit.MILLISECONDS.toDays(floorDate.getTime());
+                        testDatesSet.add(timeInDays);
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            List<Long> testDatesList = new ArrayList<>();
-            List<String> testDatesStrings = new ArrayList<>();
-            testDatesList.addAll(testDatesSet);
+            List<Long> testDatesList = new ArrayList<>(testDatesSet);
             Collections.sort(testDatesList);
-
-            for (long testDateLong : testDatesList) {
-                SimpleDateFormat sdf = new SimpleDateFormat("d/MM");
-                Date date = new Date(testDateLong);
-                testDatesStrings.add(sdf.format(date));
-            }
 
             for (Long date : testDatesList) {
                 try {
@@ -126,14 +125,16 @@ public class GraphFragment extends Fragment {
                     for (Test test : tests) {
                         DateFormat format = new SimpleDateFormat("d/MM/yyyy", Locale.getDefault());
                         Date floorDate = format.parse(format.format(test.getTestDate()));
-                        long testDate = TimeUnit.MILLISECONDS.toDays(floorDate.getTime());
-                        if (testDate == date) {
-                            if (test.getTestResult().equals("Positive")) {
-                                positiveTestsOnDate++;
-                            } else if (test.getTestResult().equals("Negative")) {
-                                negativeTestsOnDate++;
-                            } else {
-                                inconclusiveTestsOnDate++;
+                        if (floorDate != null) {
+                            long testDate = TimeUnit.MILLISECONDS.toDays(floorDate.getTime());
+                            if (testDate == date) {
+                                if (test.getTestResult().equals("Positive")) {
+                                    positiveTestsOnDate++;
+                                } else if (test.getTestResult().equals("Negative")) {
+                                    negativeTestsOnDate++;
+                                } else {
+                                    inconclusiveTestsOnDate++;
+                                }
                             }
                         }
                     }
@@ -157,6 +158,9 @@ public class GraphFragment extends Fragment {
                 line.setColor(mLineColors.get(i));
                 line.setLineWidth(3);
                 line.setValueTextSize(12);
+                line.setCircleColor(mLineColors.get(i));
+                line.setCircleHoleColor(mLineColors.get(i));
+                line.setCircleRadius(5);
                 line.setValueFormatter(new LineValueFormatter());
                 dataSets.add(line);
             }
@@ -169,7 +173,7 @@ public class GraphFragment extends Fragment {
         return view;
     }
 
-    public class XAxisValueFormatter extends ValueFormatter {
+    public static class XAxisValueFormatter extends ValueFormatter {
         @Override
         public String getAxisLabel(float value, AxisBase axis) {
             DateFormat formatter = new SimpleDateFormat("d/MM", Locale.getDefault());
@@ -178,7 +182,7 @@ public class GraphFragment extends Fragment {
         }
     }
 
-    public class LineValueFormatter extends ValueFormatter {
+    public static class LineValueFormatter extends ValueFormatter {
         @Override
         public String getPointLabel(Entry entry) {
 //            return String.valueOf((int) entry.getY());

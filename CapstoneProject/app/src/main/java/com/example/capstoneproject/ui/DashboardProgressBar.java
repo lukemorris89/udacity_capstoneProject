@@ -18,7 +18,6 @@ public class DashboardProgressBar extends View {
     private float progress = 0;
     private int min = 0;
     private int max = 100;
-    private int startAngle = -90;
     private int color = Color.DKGRAY;
     private RectF rectF;
     private Paint backgroundPaint;
@@ -46,7 +45,7 @@ public class DashboardProgressBar extends View {
         }
 
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setColor(adjustAlpha(color, 0.3f));
+        backgroundPaint.setColor(adjustAlpha(color));
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setStrokeWidth(strokeWidth);
 
@@ -56,8 +55,8 @@ public class DashboardProgressBar extends View {
         foregroundPaint.setStrokeWidth(strokeWidth);
     }
 
-    private int adjustAlpha(int color, float factor) {
-        int alpha = Math.round(Color.alpha(color) * factor);
+    private int adjustAlpha(int color) {
+        int alpha = Math.round(Color.alpha(color) * (float) 0.3);
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -79,6 +78,7 @@ public class DashboardProgressBar extends View {
 
         canvas.drawOval(rectF, backgroundPaint);
         float angle = 360 * progress / max;
+        int startAngle = -90;
         canvas.drawArc(rectF, startAngle, angle, false, foregroundPaint);
     }
 
