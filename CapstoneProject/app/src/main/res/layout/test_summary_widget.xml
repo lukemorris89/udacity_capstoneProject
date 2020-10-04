@@ -19,13 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="8dp">
+        android:layout_margin="12dp">
     <RelativeLayout
         style="@style/DashboardProgressWheelContainer"
         android:background="@drawable/widget_positive_circle"
-        android:layout_margin="12dp">
+        android:layout_margin="8dp">
         <TextView
             android:id="@+id/wheel_progress_positive_text"
             style="@style/DashboardProgressCounterText"
@@ -41,7 +39,7 @@
     <RelativeLayout
         style="@style/DashboardProgressWheelContainer"
         android:background="@drawable/widget_negative_circle"
-        android:layout_margin="12dp">
+        android:layout_margin="8dp">
         <TextView
             android:id="@+id/wheel_progress_negative_text"
             style="@style/DashboardProgressCounterText"
@@ -57,7 +55,7 @@
     <RelativeLayout
         style="@style/DashboardProgressWheelContainer"
         android:background="@drawable/widget_inconclusive_circle"
-        android:layout_margin="12dp">
+        android:layout_margin="8dp">
         <TextView
             android:id="@+id/wheel_progress_inconclusive_text"
             style="@style/DashboardProgressCounterText"
