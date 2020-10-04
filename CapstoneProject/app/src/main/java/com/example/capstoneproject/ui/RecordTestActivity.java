@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +40,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -75,6 +77,8 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     private Test mCurrentTest;
 
     private TestViewModel mTestViewModel;
+
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -432,7 +436,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
     //Location Methods
     protected void startLocationUpdates() {
-        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -445,18 +449,41 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        // do work here
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                },
-                Looper.myLooper());
+
     }
 
     public void onLocationChanged(Location location) {
         mTestLatitude = location.getLatitude();
         mTestLongitude = location.getLongitude();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            // do work here
+                            onLocationChanged(locationResult.getLastLocation());
+                        }
+                    },
+                    Looper.myLooper());
+        }
+        else {
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.record_test_rootlayout),
+                    R.string.permission_denied_test,
+                    Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.return_snackbar, new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    snackbar.dismiss();
+                    Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+            snackbar.show();
+        }
     }
 }

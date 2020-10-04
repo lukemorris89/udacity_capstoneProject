@@ -14,19 +14,29 @@
         android:icon="@mipmap/ic_launcher_logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_logo_round"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        android:screenOrientation="portrait">
+        android:theme="@style/AppTheme.NoActionBar">
+
+        <receiver android:name=".widget.TestSummaryWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/test_summary_widget_info" />
+        </receiver>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <uses-library  android:name="com.google.android.maps"
+        <uses-library
+            android:name="com.google.android.maps"
             android:required="true" />
 
         <activity
@@ -35,14 +45,13 @@
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".ui.RecordTestActivity"
             android:parentActivityName=".ui.MainActivity" />
     </application>
-
 
 </manifest>

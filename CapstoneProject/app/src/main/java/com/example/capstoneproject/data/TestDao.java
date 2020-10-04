@@ -17,7 +17,6 @@ public interface TestDao {
     @Query("SELECT * FROM testData ORDER BY mTestID")
     LiveData<List<Test>> loadAllTests();
 
-    //TODO add qualifier for today's tests only
     @Query("SELECT * FROM testData where mTestResult = :testGroup ORDER BY mTestID")
     LiveData<List<Test>> loadTestGroup(String testGroup);
 
@@ -32,5 +31,11 @@ public interface TestDao {
 
     @Delete
     void deleteTest(Test test);
+
+    @Query("SELECT * FROM testData ORDER BY mTestID")
+    List<Test> loadAllTestsWidget();
+
+    @Query("SELECT * FROM testData where mTestResult = :testGroup ORDER BY mTestID")
+    List<Test> loadTestGroupWidget(String testGroup);
 }
 

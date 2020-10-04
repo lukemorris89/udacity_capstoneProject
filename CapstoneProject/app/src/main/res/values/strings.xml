@@ -29,4 +29,11 @@
     <string name="patient_id">Patient ID</string>
     <string name="test_id">Test ID</string>
     <string name="age_group">Age Group</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="test_summary">Test Summary</string>
+    <string name="permission_denied_location">Location permissions required for testing and location services.</string>
+    <string name="close">CLOSE</string>
+    <string name="permission_denied_test">Location permission required to record tests.</string>
+    <string name="return_snackbar">RETURN</string>
 </resources>

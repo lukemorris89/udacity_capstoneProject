@@ -1,6 +1,8 @@
 package com.example.capstoneproject.ui;
 
 import android.animation.ValueAnimator;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.capstoneproject.R;
 import com.example.capstoneproject.data.TestViewModel;
 import com.example.capstoneproject.utils.Utils;
+import com.example.capstoneproject.widget.TestSummaryWidget;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -122,6 +125,14 @@ public class DashboardFragment extends Fragment {
                 }
                 updateDashboardSummaryCard(finalI, tests.size());
                 setRecyclerViewHeight(finalI);
+
+                Intent intent = new Intent(context, TestSummaryWidget.class);
+                intent.setAction("com.example.capstoneproject.widget.action.REFRESH");
+                if (getActivity() != null) {
+                    int[] ids = AppWidgetManager.getInstance(getActivity().getApplication()).getAppWidgetIds(new ComponentName(getActivity().getApplication(), TestSummaryWidget.class));
+                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                    getActivity().sendBroadcast(intent);
+                }
             });
             setUpSummaryBarObserver(dashboardProgressBarsList.get(i));
         }
