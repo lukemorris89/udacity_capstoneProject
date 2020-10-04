@@ -1,0 +1,1 @@
+To build and run this project, you will need to add a Google Maps API key to the project's gradle.properties file. To generate your own key please visit: https://developers.google.com/maps/documentation/embed/get-api-key

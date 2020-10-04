@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -334,10 +335,10 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         } else {
             LocationHelper locationHelper = new LocationHelper(this);
             String location = locationHelper.getAddress(mTestLatitude, mTestLongitude);
-//
+
             Test test = new Test(patientID, testResult, sex, ageGroup, ethnicity, comorbidities, testNotes, mTestLatitude, mTestLongitude, location, testDate);
             mTestViewModel.insertTest(test);
-//
+
             Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -450,6 +451,16 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            onLocationChanged(locationResult.getLastLocation());
+                        }
+                    },
+                    Looper.myLooper());
+        }
+
     }
 
     public void onLocationChanged(Location location) {
@@ -460,16 +471,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                        @Override
-                        public void onLocationResult(LocationResult locationResult) {
-                            onLocationChanged(locationResult.getLastLocation());
-                        }
-                    },
-                    Looper.myLooper());
-        }
-        else {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.record_test_rootlayout),
                     R.string.permission_denied_test,
                     Snackbar.LENGTH_INDEFINITE);
