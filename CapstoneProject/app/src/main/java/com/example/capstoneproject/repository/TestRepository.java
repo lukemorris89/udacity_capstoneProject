@@ -13,7 +13,6 @@ import java.util.List;
 
 public class TestRepository {
     private TestDao mTestDao;
-    private LiveData<List<Test>> mGroupTests;
 
     public TestRepository(Application application) {
         TestDatabase db = TestDatabase.getInstance(application);

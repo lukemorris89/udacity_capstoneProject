@@ -464,7 +464,6 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                         @Override
                         public void onLocationResult(LocationResult locationResult) {
-                            // do work here
                             onLocationChanged(locationResult.getLastLocation());
                         }
                     },
@@ -474,14 +473,10 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
             Snackbar snackbar = Snackbar.make(findViewById(R.id.record_test_rootlayout),
                     R.string.permission_denied_test,
                     Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction(R.string.return_snackbar, new View.OnClickListener() {
-
-                @Override
-                public void onClick(View view) {
-                    snackbar.dismiss();
-                    Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
-                    startActivity(intent);
-                }
+            snackbar.setAction(R.string.return_snackbar, view -> {
+                snackbar.dismiss();
+                Intent intent = new Intent(RecordTestActivity.this, MainActivity.class);
+                startActivity(intent);
             });
             snackbar.show();
         }

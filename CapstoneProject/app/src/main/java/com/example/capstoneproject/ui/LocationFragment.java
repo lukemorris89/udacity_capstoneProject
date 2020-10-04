@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -141,24 +140,19 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
             LocationServices.getFusedLocationProviderClient(mContext).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                         @Override
                         public void onLocationResult(LocationResult locationResult) {
-                            // do work here
                             onLocationChanged(locationResult.getLastLocation());
                         }
                     },
                     Looper.myLooper());
         }
         else {
-            Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
-                    R.string.permission_denied_location,
-                    Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction(R.string.close, new View.OnClickListener() {
-
-                @Override
-                public void onClick(View view) {
-                    snackbar.dismiss();
-                }
-            });
-            snackbar.show();
+            if (getActivity() != null) {
+                Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
+                        R.string.permission_denied_location,
+                        Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.close, view -> snackbar.dismiss());
+                snackbar.show();
+            }
         }
     }
 
@@ -207,12 +201,12 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback,
     }
 
     protected void startLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setNumUpdates(1);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setNumUpdates(1);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(locationRequest);
+        builder.addLocationRequest(mLocationRequest);
         LocationSettingsRequest locationSettingsRequest = builder.build();
 
         SettingsClient settingsClient = LocationServices.getSettingsClient(mContext);

@@ -1,6 +1,5 @@
 package com.example.capstoneproject.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,7 +18,7 @@ public class LocationHelper {
     public String getAddress(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
         StringBuilder builder = new StringBuilder();
-        String testLocation = null;
+        String testLocation;
 
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);

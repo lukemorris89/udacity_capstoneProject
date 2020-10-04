@@ -34,8 +34,5 @@ public interface TestDao {
 
     @Query("SELECT * FROM testData ORDER BY mTestID")
     List<Test> loadAllTestsWidget();
-
-    @Query("SELECT * FROM testData where mTestResult = :testGroup ORDER BY mTestID")
-    List<Test> loadTestGroupWidget(String testGroup);
 }
 

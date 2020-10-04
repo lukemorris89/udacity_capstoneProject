@@ -185,7 +185,6 @@ public class GraphFragment extends Fragment {
     public static class LineValueFormatter extends ValueFormatter {
         @Override
         public String getPointLabel(Entry entry) {
-//            return String.valueOf((int) entry.getY());
             return "";
         }
     }

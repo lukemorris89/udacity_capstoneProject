@@ -26,7 +26,6 @@ public class TestSummaryWidget extends AppWidgetProvider {
         mAppWidgetIds = appWidgetIds;
         new UpdateWidgetAsyncTask().execute(context);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
     }
 
     @Override

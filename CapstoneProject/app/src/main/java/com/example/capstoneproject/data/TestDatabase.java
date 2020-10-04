@@ -1,6 +1,5 @@
 package com.example.capstoneproject.data;
 
-
 import android.content.Context;
 import android.util.Log;
 
