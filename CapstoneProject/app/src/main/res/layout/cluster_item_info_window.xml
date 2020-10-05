@@ -76,7 +76,8 @@
         android:id="@+id/cluster_item_view_test_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View"
+        android:text="@string/view"
         android:layout_gravity="center_horizontal"
-        app:backgroundTint="@color/colorPrimary"/>
+        app:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/view_test_button"/>
 </LinearLayout>

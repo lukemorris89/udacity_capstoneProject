@@ -32,10 +32,9 @@ public class MainActivity extends AppCompatActivity {
         for (int i=0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(tabIcons[i]);
         }
-
     }
 
-    public static class ViewPagerAdapter extends FragmentPagerAdapter {
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -67,11 +66,11 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Dashboard";
+                    return getString(R.string.dashboard);
                 case 1:
-                    return "Map";
+                    return getString(R.string.map);
                 case 2:
-                    return "Trends";
+                    return getString(R.string.trends);
             }
             return null;
         }

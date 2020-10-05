@@ -29,5 +29,6 @@
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         android:text="@string/view"
-        android:gravity="end"/>
+        android:gravity="end"
+        android:contentDescription="@string/view_test_button"/>
 </LinearLayout>

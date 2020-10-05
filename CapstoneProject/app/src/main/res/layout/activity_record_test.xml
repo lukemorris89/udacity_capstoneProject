@@ -35,7 +35,8 @@
                 android:layout_marginEnd="16dp"
                 android:visibility="gone"
                 android:backgroundTint="@android:color/white"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@color/colorPrimary"
+                android:contentDescription="@string/edit_test_button"/>
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
     <ScrollView
@@ -142,7 +143,7 @@
                 app:layout_constraintLeft_toLeftOf="parent">
             <com.google.android.material.textview.MaterialTextView
                 style="@style/ViewTestTitleTextView"
-                android:text="Comorbidities" />
+                android:text="@string/comorbidities" />
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/comorbidities_textview"
                     style="@style/ViewTestTextView" />
@@ -405,7 +406,8 @@
                 app:layout_constraintTop_toBottomOf="@id/test_notes_edittext_layout"
                 android:text="@string/save_test"
                 android:textSize="18sp"
-                android:inputType="textCapSentences|textNoSuggestions|textMultiLine" />
+                android:inputType="textCapSentences|textNoSuggestions|textMultiLine"
+                android:contentDescription="@string/save_test_button"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>

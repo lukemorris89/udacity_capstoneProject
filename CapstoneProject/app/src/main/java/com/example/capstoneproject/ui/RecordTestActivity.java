@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -221,7 +220,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
                     public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                         String textEntry = charSequence.toString();
                         if (textEntry.length() < mPatientIdMinLength) {
-                            inputLayout.setError("Please enter min 5 digits");
+                            inputLayout.setError(getString(R.string.min_5_digits));
                         } else {
                             inputLayout.setError(null);
                         }
@@ -239,10 +238,10 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
 
     private void setUpDropdownValidation() {
         mDropdownErrorTextList = new ArrayList<>();
-        mDropdownErrorTextList.add("Please choose test result");
-        mDropdownErrorTextList.add("Please choose patient sex");
-        mDropdownErrorTextList.add("Please choose patient age group");
-        mDropdownErrorTextList.add("Please choose patient ethnicity");
+        mDropdownErrorTextList.add(getString(R.string.please_choose_result));
+        mDropdownErrorTextList.add(getString(R.string.please_choose_sex));
+        mDropdownErrorTextList.add(getString(R.string.please_choose_age));
+        mDropdownErrorTextList.add(getString(R.string.please_choose_ethnicity));
 
         for (int i = 0; i < mDropdownInputs.size(); i++) {
             TextInputLayout dropdownLayout = mDropdownLayouts.get(i);
@@ -278,7 +277,7 @@ public class RecordTestActivity extends AppCompatActivity implements AdapterView
         TextInputLayout patientIdEditTextLayout = mEditTextLayouts.get(0);
         String patientID = mEditTextInputs.get(0).getText().toString();
         if (patientID.length() < mPatientIdMinLength) {
-            patientIdEditTextLayout.setError("Please enter min 5 digits");
+            patientIdEditTextLayout.setError(getString(R.string.min_5_digits));
             mInvalidViews.add(patientIdEditTextLayout);
         } else {
             patientIdEditTextLayout.setError(null);

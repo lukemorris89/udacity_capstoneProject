@@ -65,7 +65,7 @@ public class GraphFragment extends Fragment {
         mLineChart = view.findViewById(R.id.line_chart);
         mLineChart.setAutoScaleMinMaxEnabled(true);
         mLineChart.setDescription(null);
-        mLineChart.setNoDataText("No data added yet.");
+        mLineChart.setNoDataText(getString(R.string.no_data_graph));
         mLineChart.setExtraOffsets(0f,5f,20f,15f);
 
         XAxis xAxis = mLineChart.getXAxis();

@@ -36,4 +36,20 @@
     <string name="close">CLOSE</string>
     <string name="permission_denied_test">Location permission required to record tests.</string>
     <string name="return_snackbar">RETURN</string>
+    <string name="no_data_graph">No data added yet.</string>
+    <string name="min_5_digits">Please enter min 5 digits</string>
+    <string name="please_choose_result">Please choose test result</string>
+    <string name="please_choose_sex">Please choose patient sex</string>
+    <string name="please_choose_age">Please choose patient age group</string>
+    <string name="please_choose_ethnicity">Please choose patient ethnicity</string>
+    <string name="comorbidities">Comorbidities</string>
+    <string name="edit_test_button">Edit Test Button</string>
+    <string name="save_test_button">Save Test button</string>
+    <string name="view_test_button">View Test button</string>
+    <string name="expand_positive_tests_button">Expand positive tests button</string>
+    <string name="expand_negative_tests_button">Expand negative tests button</string>
+    <string name="expand_inconclusive_tests_button">Expand inconclusive tests button</string>
+    <string name="add_new_test_button">Add new test button</string>
+    <string name="chart_of_test_trends_over_time">Chart of test trends over time</string>
+    <string name="map_of_test_data">Map of test data</string>
 </resources>
